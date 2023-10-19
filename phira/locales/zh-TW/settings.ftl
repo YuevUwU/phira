@@ -1,8 +1,8 @@
 
-label = 設定
+label = 設置
 
 general = 通用
-audio = 音訊
+audio = 音頻
 chart = 譜面
 debug = 調試
 about = 關於
@@ -18,7 +18,7 @@ item-mp-addr-invalid = 無效的伺服器地址
 item-lowq = 低畫質模式
 item-lowq-sub = 建議在畫面卡頓時啟用
 item-insecure = 不安全模式
-item-insecure-sub = 當無法使用線上功能時可嘗試該功能。這會使得你的連線不安全！
+item-insecure-sub = 當無法使用在線功能時可嘗試該功能。這會使得你的連接不安全！
 
 item-adjust = 自動對齊時間
 item-adjust-sub = 自動調整延遲以同步音樂和譜面
@@ -27,7 +27,7 @@ item-sfx = 音效音量
 item-bgm = BGM 音量
 item-cali = 調整延遲
 
-item-show-acc = 顯示實時準度
+item-show-acc = 顯示實時准度
 item-dc-pause = 雙擊暫停
 item-dhint = 雙押提示
 item-dhint-sub = 同時觸線的音符將會被高亮
@@ -41,14 +41,14 @@ item-chart-debug-sub = 顯示判定線編號和朝向
 item-touch-debug = 觸摸調試
 item-touch-debug-sub = 遊玩過程中顯示觸摸點
 
-load-cali-failed = 載入音訊失敗
+load-cali-failed = 加載音頻失敗
 
 about-content =
   Phira v{ $version }
 
   Phira 是一款玩法基於 Phigros 的非商業社區音樂遊戲，使用 Rust 開發。
 
-  BiliBili 帳號：@Phira官方
+  BiliBili 賬號：@Phira官方
   QQ 頻道：r48eajexth
 
   感謝以下玩家對我們的支持！（按字典序排序）

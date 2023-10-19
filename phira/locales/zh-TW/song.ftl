@@ -1,25 +1,25 @@
 
-load-preview-failed = 載入歌曲預覽失敗
-load-charts-failed = 載入難度失敗
+load-preview-failed = 加載歌曲預覽失敗
+load-charts-failed = 加載難度失敗
 no-chart-for-download = 該譜面不提供下載
 
-load-chart-failed = 載入譜面失敗
+load-chart-failed = 加載譜面失敗
 
 dl-cancel = 取消
-dl-status-fetch = 載入資訊
+dl-status-fetch = 加載信息
 dl-status-song = 下載歌曲
 dl-status-chart = 下載譜面
-dl-status-extract = 解壓縮中...
+dl-status-extract = 正在解壓。。。
 dl-status-illustration = 下載插圖
 dl-status-assets = 下載資源
-dl-status-saving = 保存中...
+dl-status-saving = 正在保存。。。
 dl-failed = 下載失敗
 dl-success = 下載完成
 
 guest = 遊客
 
 warn-unrated = 本次遊玩將不計入成績
-failed-to-play = 啟動線上模式失敗
+failed-to-play = 啟動在線模式失敗
 play-cancel = 取消
 play-switch-to-offline = 切換到離線模式
 switched-to-offline = 已切換到離線模式
@@ -31,8 +31,8 @@ offset = 調整延遲
 
 edit-cancel = 取消
 edit-save = 保存
-edit-saving = 保存中...
-edit-load-file-failed = 載入外部文件失敗
+edit-saving = 正在保存。。。
+edit-load-file-failed = 加載外部文件失敗
 edit-save-failed = 保存失敗
 edit-saved = 保存成功
 edit-preview-invalid = 預覽時間超出範圍
@@ -42,7 +42,7 @@ edit-downloaded = 您無法編輯下載的譜面！
 edit-upload = 上傳
 edit-update = 更新
 
-upload-login-first = 請先登入
+upload-login-first = 請先登錄
 upload-builtin = 不能上傳內置譜面
 upload-rules = 上傳須知
 upload-rules-content =
@@ -54,13 +54,13 @@ upload-rules-content =
   5. 本須知最終解釋權歸 TeamFlos 所有
 upload-cancel = 再想想
 upload-confirm = 確認上傳
-uploading = 上傳中...
+uploading = 正在上傳。。。
 upload-chart-failed = 上傳譜面失敗
 upload-success = 上傳成功，請等待審核！
 upload-failed = 上傳失敗
 
 ldb = 排行榜
-ldb-load-failed = 載入排行榜失敗
+ldb-load-failed = 加載排行榜失敗
 ldb-no-rank = 無
 ldb-score = 分數
 ldb-std = 無瑕度
@@ -79,14 +79,14 @@ unreviewed = 未審核
 
 review-approve = 通過
 review-deny = 拒絕
-review-del = 從線上刪除
+review-del = 從在線刪除
 review-approved = 已通過
 review-passed = 已通過，譜面已過審
 review-denied = 已拒絕
 review-deleted = 已刪除
 review-action-failed = 執行審核操作失敗
-review-doing = 執行操作中...
-review-not-loaded = 資訊尚未載入完成，請稍等
+review-doing = 執行正在操作。。。
+review-not-loaded = 信息尚未加載完成，請稍等
 review-edit-tags = 編輯標籤
 review-edit-tags-failed = 編輯標籤失敗
 review-edit-tags-done = 標籤已更新
@@ -103,13 +103,13 @@ rate-failed = 評分失敗
 rate-done = 評分成功
 
 need-update = 譜面更新
-need-update-info-only-content = 譜面資訊已更新，是否同步這些資訊？
+need-update-info-only-content = 譜面信息已更新，是否同步這些信息？
 need-update-content = 譜面已更新，若本地不更新您將無法上傳成績。是否現在更新？
 
 request-failed = 請求失敗
 
 stabilize = 申請 stable
-stabilize-warn = 普通使用者每 3 天可以申請一次 stable 譜面。至少擁有一張 stable 譜面的使用者每 1 天可以申請一次。
+stabilize-warn = 普通用戶每 3 天可以申請一次 stable 譜面。至少擁有一張 stable 譜面的用戶每 1 天可以申請一次。
 stabilize-requested = 申請 stable 成功
 stabilize-failed = 申請 stable 失敗
 stabilize-approve = 通過 special

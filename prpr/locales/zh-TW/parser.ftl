@@ -11,7 +11,7 @@ paint-events-parse-failed = paint 事件解析失敗
 text-events-parse-failed = text 事件解析失敗
 color-events-parse-failed = color 事件解析失敗
 
-illustration-load-failed = 位於 { $path } 的插圖載入失敗
+illustration-load-failed = 位於 { $path } 的插圖加載失敗
 
 judge-line-location-name = #{ $jlid } ({ $name }) 判定線中
 
@@ -36,7 +36,7 @@ unexpected-extra = 未知的附加內容: { $next }
 line-location = #{ $lid } 行中
 
 # extra
-shader-load-failed = 無法從 { $path } 中載入 shader
+shader-load-failed = 無法從 { $path } 中加載 shader
 shader-not-found = 未找到預置 shader { $shader }
 effect-location = #{ $id } 號 effect 中
-video-load-failed = 從 { $path } 中載入影片失敗
+video-load-failed = 從 { $path } 中加載影片失敗

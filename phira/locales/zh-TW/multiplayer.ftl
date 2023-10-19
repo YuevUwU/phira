@@ -1,12 +1,12 @@
 
 multiplayer = 多人遊戲
 
-connect = 連線
-connect-must-login = 登入後才能進入多人遊戲
-connect-success = 連線成功
-connect-failed = 連線失敗
+connect = 連接
+connect-must-login = 登錄後才能進入多人遊戲
+connect-success = 連接成功
+connect-failed = 連接失敗
 connect-authenticate-failed = 身分驗證失敗
-reconnect = 斷線重連中...
+reconnect = 正在斷線重連。。。
 
 create-room = 創建房間
 create-room-success = 房間已創建
@@ -20,13 +20,13 @@ join-room-failed = 加入房間失敗
 leave-room = 離開房間
 leave-room-failed = 離開房間失敗
 
-disconnect = 中斷連線
+disconnect = 中斷連接
 
 request-start = 開始遊戲
 request-start-no-chart = 你尚未選擇譜面
 request-start-failed = 開始遊戲失敗
 
-user-list = 使用者列表
+user-list = 用戶列表
 
 lock-room = { $current ->
   [true] 解鎖房間
