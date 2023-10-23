@@ -7,7 +7,7 @@ use crate::{
     data::{BriefChartInfo, LocalChart},
     dir, get_data, get_data_mut,
     icons::Icons,
-    page::{thumbnail_path, ChartItem, Fader, Illustration, SFader},
+    page::{local_illustration, thumbnail_path, ChartItem, Fader, Illustration, SFader},
     popup::Popup,
     rate::RateDialog,
     save_data,
@@ -22,7 +22,7 @@ use phira_mp_common::{ClientCommand, CompactPos, JudgeEvent, TouchFrame};
 use prpr::{
     config::Mods,
     core::Tweenable,
-    ext::{poll_future, rect_shadow, semi_black, semi_white, unzip_into, JoinToString, LocalTask, RectExt, SafeTexture, ScaleType},
+    ext::{open_url, poll_future, rect_shadow, semi_black, semi_white, unzip_into, JoinToString, LocalTask, RectExt, SafeTexture, ScaleType},
     fs,
     info::ChartInfo,
     judge::{icon_index, Judge},
@@ -278,25 +278,18 @@ pub struct SongScene {
 
     background: Arc<Mutex<Option<SafeTexture>>>,
     tr_start: f32,
+
+    open_web_btn: DRectButton,
 }
 
 impl SongScene {
-    pub fn new(
-        mut chart: ChartItem,
-        local_illu: Option<Illustration>,
-        local_path: Option<String>,
-        icons: Arc<Icons>,
-        rank_icons: [SafeTexture; 8],
-        mods: Mods,
-    ) -> Self {
+    pub fn new(mut chart: ChartItem, local_path: Option<String>, icons: Arc<Icons>, rank_icons: [SafeTexture; 8], mods: Mods) -> Self {
         if let Some(path) = &local_path {
             if let Some(id) = path.strip_prefix("download/") {
                 chart.info.id = Some(id.parse().unwrap());
             }
         }
-        let illu = if let Some(illu) = local_illu {
-            illu
-        } else if let Some(id) = chart.info.id {
+        let illu = if let Some(id) = chart.info.id {
             Illustration {
                 texture: chart.illu.texture.clone(),
                 notify: Arc::default(),
@@ -310,6 +303,10 @@ impl SongScene {
                 loaded: Arc::default(),
                 load_time: f32::NAN,
             }
+        } else if let Some(path) = &chart.local_path {
+            let illu = local_illustration(path.clone(), chart.illu.texture.1.clone(), true);
+            illu.notify.notify_one();
+            illu
         } else {
             chart.illu
         };
@@ -444,6 +441,8 @@ impl SongScene {
 
             tr_start: f32::NAN,
             background: Arc::default(),
+
+            open_web_btn: DRectButton::new(),
         }
     }
 
@@ -884,6 +883,7 @@ impl SongScene {
                             if pos == 1 {
                                 CONFIRM_UPLOAD.store(true, Ordering::SeqCst);
                             }
+                            false
                         })
                         .show();
                 }
@@ -917,7 +917,7 @@ impl SongScene {
         ui.dy(0.03);
         self.ldb_type_btn.render_text(
             ui,
-            Rect::new(width - 0.24, -0.01, 0.23, 0.09),
+            Rect::new(width - 0.24, 0.01, 0.23, 0.08),
             rt,
             if self.ldb_std { tl!("ldb-std") } else { tl!("ldb-score") },
             0.6,
@@ -966,6 +966,10 @@ impl SongScene {
                     ui.dy(dy);
                 }};
             }
+            let mw = width - pad * 3.;
+            let r = Rect::new(0.03, 0., mw, 0.12).nonuniform_feather(-0.03, -0.01);
+            self.open_web_btn.render_text(ui, r, rt, ttl!("open-in-web"), 0.6, true);
+            dy!(r.h + 0.04);
             if let Some(uploader) = &self.info.uploader {
                 let c = 0.06;
                 let s = 0.05;
@@ -983,7 +987,6 @@ impl SongScene {
                 }
                 dy!(0.14);
             }
-            let mw = width - pad * 3.;
             let mut item = |title: Cow<'_, str>, content: Cow<'_, str>| {
                 dy!(ui.text(title).size(0.4).color(semi_white(0.7)).draw().h + 0.02);
                 dy!(ui.text(content).pos(pad, 0.).size(0.6).multiline().max_width(mw).draw().h + 0.03);
@@ -1294,6 +1297,10 @@ impl Scene for SongScene {
                             );
                             return Ok(true);
                         }
+                        if self.open_web_btn.touch(touch, rt) {
+                            open_url(&format!("https://phira.moe/chart/{}", self.info.id.unwrap()))?;
+                            return Ok(true);
+                        }
                     }
                     SideContent::Mods => {
                         if self.mod_scroll.touch(touch, t) {
@@ -1490,6 +1497,7 @@ impl Scene for SongScene {
                                     let _ = save_data();
                                     show_message(tl!("switched-to-offline")).ok();
                                 }
+                                false
                             })
                             .show();
                     }

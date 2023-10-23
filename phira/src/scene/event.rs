@@ -2,7 +2,7 @@ prpr::tl_file!("event");
 
 use super::{render_ldb, LdbDisplayItem, ProfileScene};
 use crate::{
-    client::{recv_raw, Client, Event},
+    client::{recv_raw, Client, Event, UserManager},
     icons::Icons,
     page::{EventPage, Fader, Illustration, SFader},
     uml::{parse_uml, Uml},
@@ -330,6 +330,9 @@ impl Scene for EventScene {
                         show_error(err.context(tl!("load-ldb-failed")));
                     }
                     Ok(ldb) => {
+                        for item in ldb.iter() {
+                            UserManager::request(item.player);
+                        }
                         self.ldb = Some(ldb);
                     }
                 }
@@ -406,14 +409,14 @@ impl Scene for EventScene {
                     let oh = r.h;
                     self.btn_join.render_shadow(ui, r, t, |ui, path| {
                         ui.fill_path(&path, Color { a: p, ..bc });
+                        ui.text(text)
+                            .pos(ct.x, ct.y)
+                            .anchor(0.5, 0.5)
+                            .no_baseline()
+                            .size(0.8 * (1. - (1. - r.h / oh).powf(1.3)))
+                            .max_width(r.w)
+                            .draw();
                     });
-                    ui.text(text)
-                        .pos(ct.x, ct.y)
-                        .anchor(0.5, 0.5)
-                        .no_baseline()
-                        .size(0.8 * (1. - (1. - r.h / oh).powf(1.3)))
-                        .max_width(r.w)
-                        .draw();
                 };
                 if status.joined {
                     if Utc::now() > self.event.time_end {

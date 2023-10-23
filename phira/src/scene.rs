@@ -15,13 +15,14 @@ pub use song::{Downloading, SongScene, RECORD_ID};
 mod profile;
 pub use profile::ProfileScene;
 
-use crate::{client::UserManager, data::LocalChart, dir, get_data, page::Fader};
+use crate::{client::UserManager, data::LocalChart, dir, get_data, get_data_mut, page::Fader, save_data};
 use anyhow::{bail, Context, Result};
 use prpr::{
     config::Mods,
-    ext::{semi_white, unzip_into, RectExt, SafeTexture},
+    core::{BOLD_FONT, PGR_FONT},
+    ext::{open_url, semi_white, unzip_into, RectExt, SafeTexture},
     fs::{self, FileSystem},
-    ui::{Dialog, RectButton, Scroll, Ui},
+    ui::{Dialog, RectButton, Scroll, Scroller, Ui},
 };
 use std::{
     cell::RefCell,
@@ -55,8 +56,44 @@ pub fn confirm_dialog(title: impl Into<String>, content: impl Into<String>, res:
             if id == 1 {
                 res.store(true, Ordering::SeqCst);
             }
+            false
         })
         .show();
+}
+
+pub fn check_read_tos_and_policy() -> bool {
+    if get_data().read_tos_and_policy {
+        return true;
+    }
+
+    let mut done = 0;
+    Dialog::plain(ttl!("tos-and-policy"), ttl!("tos-and-policy-desc"))
+        .buttons(vec![ttl!("cancel").into_owned(), ttl!("tos").into_owned(), ttl!("policy").into_owned()])
+        .listener(move |pos| {
+            match pos {
+                1 => {
+                    open_url("https://phira.moe/terms-of-use").unwrap();
+                    done |= 1;
+                }
+                2 => {
+                    open_url("https://phira.moe/privacy-policy").unwrap();
+                    done |= 2;
+                }
+                _ => {
+                    return false;
+                }
+            }
+            if done == 3 {
+                get_data_mut().read_tos_and_policy = true;
+                let _ = save_data();
+                false
+            } else {
+                true
+            }
+        })
+        .show();
+
+    false
 }
 
 #[inline]
@@ -123,21 +160,18 @@ pub fn render_ldb<'a>(
 
     let pad = 0.03;
     let width = w - pad;
-    ui.dy(0.03);
-    let r = ui.text(title).size(0.8).draw();
-    ui.dy(r.h + 0.03);
+    ui.dy(0.01);
+    let r = ui.text(title).size(0.9).draw_using(&BOLD_FONT);
+    ui.dy(r.h + 0.05);
     let sh = ui.top * 2. - r.h - 0.08;
     let Some(iter) = iter else {
         ui.loading(width / 2., sh / 2., rt, WHITE, ());
         return;
     };
+    let off = scroll.y_scroller.offset;
     scroll.size((width, sh));
     scroll.render(ui, |ui| {
-        ui.text(ttl!("release-to-refresh"))
-            .pos(width / 2., -0.13)
-            .anchor(0.5, 0.)
-            .size(0.8)
-            .draw();
+        render_release_to_refresh(ui, width / 2., off);
         let s = 0.14;
         let mut h = 0.;
         ui.dx(0.02);
@@ -155,7 +189,7 @@ pub fn render_ldb<'a>(
                         .anchor(0.5, 0.5)
                         .no_baseline()
                         .size(0.52)
-                        .draw();
+                        .draw_using(&PGR_FONT);
                     let ct = (0.18, s / 2.);
                     ui.avatar(ct.0, ct.1, r, rt, UserManager::opt_avatar(item.player_id, icon_user));
                     item.btn.set(ui, Rect::new(ct.0 - r, ct.1 - r, r * 2., r * 2.));
@@ -168,14 +202,20 @@ pub fn render_ldb<'a>(
                             .no_baseline()
                             .size(0.4)
                             .color(semi_white(0.6))
-                            .draw();
+                            .draw_using(&BOLD_FONT);
                         rt -= r.w + 0.01;
                     } else {
                         rt -= 0.01;
                     }
-                    let r = ui.text(item.score).pos(rt, s / 2.).anchor(1., 0.5).no_baseline().size(0.6).draw();
+                    let r = ui
+                        .text(item.score)
+                        .pos(rt, s / 2.)
+                        .anchor(1., 0.5)
+                        .no_baseline()
+                        .size(0.6)
+                        .draw_using(&PGR_FONT);
                     rt -= r.w + 0.03;
-                    let lt = 0.24;
+                    let lt = 0.25;
                     if let Some((name, color)) = UserManager::name_and_color(item.player_id) {
                         ui.text(name)
                             .pos(lt, s / 2.)
@@ -193,4 +233,14 @@ pub fn render_ldb<'a>(
         });
         (width, h)
     });
+}
+
+pub fn render_release_to_refresh(ui: &mut Ui, cx: f32, off: f32) {
+    let p = (-off / Scroller::EXTEND).clamp(0., 1.);
+    ui.text(ttl!("release-to-refresh"))
+        .pos(cx, -0.2 + p * 0.07)
+        .anchor(0.5, 0.)
+        .size(0.8)
+        .color(semi_white(p * 0.8))
+        .draw();
 }
