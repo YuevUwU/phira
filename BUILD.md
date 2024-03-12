@@ -50,10 +50,11 @@ You can find the built binary at `phira/target/[platform]/release/phira-main`.
 > If you have a guide or download method for compiling the ffmpeg static library binaries, please feel free to submit a pull request.
 ## Before running
 Some assets have to be obtained from the release. 
-For convenience, we put the binary in a path `build`. 
+For convenience, we put the binary in a example path `phira-dev`. 
 ### x86_64-unknown-linux-gnu
 ```bash
-cd build
+mkdir phira-dev
+cd phira-dev
 
 # Get latest release
 curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
@@ -70,7 +71,8 @@ cp phira/target/x86_64-unknown-linux-gnu/release/phira-main .
 ```
 ### x86_64-pc-windows-gnu
 ```bash
-cd build
+mkdir phira-dev
+cd phira-dev
 
 # Get latest release
 curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
