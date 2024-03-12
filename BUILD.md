@@ -1,12 +1,12 @@
-## Install Requirements
+## Install Dependencies
 ### Debian / Ubuntu / Linux Mint
 Ensure root or sudo privileges for package installation.
 ```bash
-# For Linux binary
+# For building Linux binary
 sudo apt-get install -y curl git unzip gcc make pkg-config libgtk-3-dev libasound2-dev
 
 # For building Windows executable
-sudo apt-get install -y curl git unzip gcc make pkg-config libgtk-3-dev libasound2-dev mingw-w64
+sudo apt-get install -y curl git unzip gcc make mingw-w64
 ```
 ### Install Rust
 ```bash
