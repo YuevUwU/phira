@@ -22,7 +22,7 @@ source $HOME/.cargo/env
 > [!NOTE]
 > For other installation methods (e.g. standalone installers), please check [Other Rust Installation Methods](https://forge.rust-lang.org/infra/other-installation-methods.html#standalone).
 ## Build from Source
-### Linux / WSL
+### Linux / WSL x86_64
 ```bash
 # Clone the repository
 git clone https://github.com/TeamFlos/phira.git
@@ -37,10 +37,12 @@ rm static-lib.zip
 cd ..
 cargo clean
 
-# Build for Linux
+# Build for Linux x86_64
+rustup target add x86_64-unknown-linux-gnu
 cargo build --target=x86_64-unknown-linux-gnu --release --package phira-main
 
-# Build for Windows
+# Build for Windows x86_64
+rustup target add x86_64-pc-windows-gnu
 cargo build --target=x86_64-pc-windows-gnu --release --package phira-main
 ```
 You can find the built binary at `phira/target/[platform]/release/phira-main`.
