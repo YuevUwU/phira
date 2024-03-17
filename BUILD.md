@@ -6,7 +6,25 @@ Ensure root or sudo privileges for package installation.
 sudo apt-get install -y curl git unzip gcc make pkg-config libgtk-3-dev libasound2-dev
 
 # For building Windows executable
-sudo apt-get install -y curl git unzip gcc make mingw-w64
+sudo apt-get install -y curl git unzip gcc make gcc-mingw-w64
+```
+### Arch Linux / Manjaro
+Ensure root or sudo privileges for package installation.
+```bash
+# For building Linux binary
+sudo pacman -Sy curl git wget unzip gcc make pkg-config gtk3 alsa-lib --noconfirm
+
+# For building Windows executable
+sudo pacman -Sy curl git wget unzip gcc make mingw-w64-gcc --noconfirm
+```
+### Fedora
+Ensure root or sudo privileges for package installation.
+```bash
+# For building Linux binary
+sudo dnf install -y curl git wget unzip gcc make pkgconf-pkg-config gtk3-devel alsa-lib-devel
+
+# For building Windows executable
+sudo dnf install -y curl git wget unzip gcc make mingw64-gcc perl
 ```
 ### Install Rust
 ```bash
