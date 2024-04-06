@@ -126,20 +126,10 @@ cp phira/target/x86_64-pc-windows-gnu/release/phira-main.exe .
 ### From File Explorer
 Double click to open `phira-main` or `phira-main.exe`
 ### From Command Line
-#### Linux
 ```
-# Open phira normally
+# Linux
 ./phira-main
 
-# Open phira with all log output
-RUST_LOG=error ./phira-main
-```
-#### Windows
-```
-# Open phira normally
-./phira-main
-
-# Open phira with all log output
-set RUST_LOG=error
-./phira-main
+# Windows
+.\phira-main.exe
 ```
