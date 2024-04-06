@@ -6,7 +6,7 @@ Ensure root or sudo privileges for package installation.
 sudo apt-get install -y curl git unzip gcc make pkg-config libgtk-3-dev libasound2-dev
 
 # For building Windows executable
-sudo apt-get install -y curl git unzip gcc make gcc-mingw-w64
+sudo apt-get install -y curl git unzip gcc make gcc-mingw-w64 yasm
 ```
 ### Arch Linux / Manjaro
 Ensure root or sudo privileges for package installation.
@@ -15,7 +15,7 @@ Ensure root or sudo privileges for package installation.
 sudo pacman -Sy curl git wget unzip gcc make pkg-config gtk3 alsa-lib --noconfirm
 
 # For building Windows executable
-sudo pacman -Sy curl git wget unzip gcc make mingw-w64-gcc --noconfirm
+sudo pacman -Sy curl git wget unzip gcc make mingw-w64-gcc yasm --noconfirm
 ```
 ### Fedora
 Ensure root or sudo privileges for package installation.
@@ -24,7 +24,7 @@ Ensure root or sudo privileges for package installation.
 sudo dnf install -y curl git wget unzip gcc make pkgconf-pkg-config gtk3-devel alsa-lib-devel
 
 # For building Windows executable
-sudo dnf install -y curl git wget unzip gcc make mingw64-gcc perl
+sudo dnf install -y curl git wget unzip gcc make mingw64-gcc perl yasm
 ```
 ### Install Rust
 ```bash
@@ -66,23 +66,51 @@ cargo build --target=x86_64-pc-windows-gnu --release --package phira-main
 You can find the built binary at `phira/target/[platform]/release/phira-main`.  
 ### Build Arguments
 See also: [cargo build - The Cargo Book](https://doc.rust-lang.org/cargo/commands/cargo-build.html)  
-`-r`, `--release`: Build an optimized version, but takes longer to compile. It's recommended to delete it during development.  
-`--target`: Build for the given architecture. If not added, the default architecture will be used, which is determined by the selection during installation. Run `rustc --print target-list` for a list of supported targets. However, phira may not support compilation of certain architectures.
+| Argument | Description |
+|---|---|
+| `-r`, `--release` | Build an optimized version, but takes longer to compile. It's recommended to delete it during development. |
+| `--target <triple>` | Build for the given architecture. If not added, the default architecture will be used, which is determined by the selection during installation. Run `rustc --print target-list` for a list of supported targets. However, phira may not support compilation of certain architectures. |
 ### Optional Features
 As of v0.6.2, phira supports compilation with these optional or unfinished features.  
 You can enable them via `-F <features>` or `--features <features>`. For example:
 ```
 cargo build --package phira-main --features "phira/chat,phira/event_debug"
 ```
-`phira/closed`: (Unavailable) This feature is closed source and cannot be compiled by most users.  
-`phira/video`: (Useless) Video support. For v0.6.2, the feature is a default and neccessary feature of prpr. Turning it on or off doesn't affect the feature.  
-`phira/aa`: Enable anti-addiction measures. Due to laws in China, Android users will be required to fill in the name-based authentication system.  
-`phira/chat`: Message service in multiplayer rooms. Due to laws in China, the message censorship feature is still to be developed.  
-`phira/event_debug`: UML debugging support for event development. The event content will be changed in real time according to the `test.uml` in the same folder as the executable file.
+| Feature | Description |
+|---|---|
+| `phira/closed` | (Unavailable) This feature is closed source and cannot be compiled by most users. |
+| `phira/video` | (Useless) Video support. For v0.6.2, the feature is a default and neccessary feature of prpr. Turning it on or off doesn't affect the feature. |
+| `phira/aa` | Enable anti-addiction measures. Due to laws in China, Android users will be required to fill in the name-based authentication system. |
+| `phira/chat` | Message service in multiplayer rooms. Due to laws in China, the message censorship feature is still to be developed. |
+| `phira/event_debug` | UML debugging support for event development. The event content will be changed in real time according to the test.uml in the same folder as the executable file. |
 
-> [!NOTE]
-> The binaries provided by Mivik only support the build of `x86_64-unknown-linux-gnu` and `x86_64-pc-windows-gnu`.  
-> If you have a guide or download method for compiling the ffmpeg static library binaries, please feel free to submit a pull request.
+### Build FFmpeg Static Library
+The `static-lib.zip` we provided only support the build of `x86_64-unknown-linux-gnu` and `x86_64-pc-windows-gnu`.  
+In order to try compiling for other platforms, or for those who want to build their own, you can refer to the following tutorial.
+```
+# Build for your device (Linux/Android)
+git clone https://git.ffmpeg.org/ffmpeg.git --depth=1
+cd ffmpeg && mkdir build && cd build
+../configure --disable-programs \
+             --disable-doc \
+             --disable-everything \
+             --disable-debug
+make
+mkdir /path/to/phira/prpr-avc/static-lib/
+cp */*.a /path/to/phira/prpr-avc/static-lib/
+
+# Build for Windows with WSL
+git clone https://git.ffmpeg.org/ffmpeg.git --depth=1
+cd ffmpeg && mkdir build && cd build
+../configure --disable-programs \
+             --disable-doc \
+             --disable-everything \
+             --disable-debug \
+             --arch=x86_64 \
+             --target_os=mingw64 \
+             --cross-prefix=x86_64-w64-mingw32-
+```
+
 ## Before running
 Some assets have to be obtained from the release. 
 For convenience, we put the binary in a example path `phira-dev`. 
