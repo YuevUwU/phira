@@ -63,7 +63,22 @@ cargo build --target=x86_64-unknown-linux-gnu --release --package phira-main
 rustup target add x86_64-pc-windows-gnu
 cargo build --target=x86_64-pc-windows-gnu --release --package phira-main
 ```
-You can find the built binary at `phira/target/[platform]/release/phira-main`.
+You can find the built binary at `phira/target/[platform]/release/phira-main`.  
+### Build Arguments
+See also: [cargo build - The Cargo Book](https://doc.rust-lang.org/cargo/commands/cargo-build.html)  
+`-r`, `--release`: Build an optimized version, but takes longer to compile. It's recommended to delete it during development.  
+`--target`: Build for the given architecture. If not added, the default architecture will be used, which is determined by the selection during installation. Run `rustc --print target-list` for a list of supported targets. However, phira may not support compilation of certain architectures.
+### Optional Features
+As of v0.6.2, phira supports compilation with these optional or unfinished features.  
+You can enable them via `-F <features>` or `--features <features>`. For example:
+```
+cargo build --package phira-main --features "phira/chat,phira/event_debug"
+```
+`phira/closed`: (Unavailable) This feature is closed source and cannot be compiled by most users.  
+`phira/video`: (Useless) Video support. For v0.6.2, the feature is a default and neccessary feature of prpr. Turning it on or off doesn't affect the feature.  
+`phira/aa`: Enable anti-addiction measures. Due to laws in China, Android users will be required to fill in the name-based authentication system.  
+`phira/chat`: Message service in multiplayer rooms. Due to laws in China, the message censorship feature is still to be developed.  
+`phira/event_debug`: UML debugging support for event development. The event content will be changed in real time according to the `test.uml` in the same folder as the executable file.
 
 > [!NOTE]
 > The binaries provided by Mivik only support the build of `x86_64-unknown-linux-gnu` and `x86_64-pc-windows-gnu`.  
