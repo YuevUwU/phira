@@ -9,7 +9,7 @@ Ensure root or sudo privileges for package installation.
 sudo apt-get install -y curl git unzip gcc make pkg-config libgtk-3-dev libasound2-dev
 
 # For building Windows executable
-sudo apt-get install -y curl git unzip gcc make gcc-mingw-w64 yasm
+sudo apt-get install -y curl git unzip gcc make gcc-mingw-w64
 ```
 
 ### Arch Linux / Manjaro
@@ -21,7 +21,7 @@ Ensure root or sudo privileges for package installation.
 sudo pacman -Sy curl git wget unzip gcc make pkg-config gtk3 alsa-lib --noconfirm
 
 # For building Windows executable
-sudo pacman -Sy curl git wget unzip gcc make mingw-w64-gcc yasm --noconfirm
+sudo pacman -Sy curl git wget unzip gcc make mingw-w64-gcc --noconfirm
 ```
 
 ### Fedora
@@ -33,7 +33,7 @@ Ensure root or sudo privileges for package installation.
 sudo dnf install -y curl git wget unzip gcc make pkgconf-pkg-config gtk3-devel alsa-lib-devel
 
 # For building Windows executable
-sudo dnf install -y curl git wget unzip gcc make mingw64-gcc perl yasm
+sudo dnf install -y curl git wget unzip gcc make mingw64-gcc perl
 ```
 
 ### Install Rust
@@ -108,11 +108,12 @@ cargo build --package phira-main --features "phira/chat,phira/event_debug"
 | `phira/chat`        | Message service in multiplayer rooms. Due to laws in China, the message censorship feature is still to be developed.                                             |
 | `phira/event_debug` | UML debugging support for event development. The event content will be changed in real time according to the test.uml in the same folder as the executable file. |
 
-### Build FFmpeg Static Library
+### Build FFmpeg Static Library (Test failed in WSL Ubuntu22.04)
 
 The `static-lib.zip` we provided only support the build of `x86_64-unknown-linux-gnu` and `x86_64-pc-windows-gnu`.  
-In order to try compiling for other platforms, or for those who want to build their own, you can refer to the following tutorial.
-
+In order to try compiling for other platforms, or for those who want to build their own, you can refer to the following tutorial.  
+There are some additional dependencies you need to install:
+- yasm
 ```
 # Build for your device (Linux/Android)
 git clone https://git.ffmpeg.org/ffmpeg.git --depth=1
@@ -122,8 +123,8 @@ cd ffmpeg && mkdir build && cd build
              --disable-everything \
              --disable-debug
 make
-mkdir /path/to/phira/prpr-avc/static-lib/
-cp */*.a /path/to/phira/prpr-avc/static-lib/
+mkdir -p /path/to/phira/prpr-avc/static-lib/x86_64-unknown-linux-gnu
+cp */*.a /path/to/phira/prpr-avc/static-lib/x86_64-unknown-linux-gnu
 
 # Build for Windows with WSL
 git clone https://git.ffmpeg.org/ffmpeg.git --depth=1
@@ -135,6 +136,9 @@ cd ffmpeg && mkdir build && cd build
              --arch=x86_64 \
              --target_os=mingw64 \
              --cross-prefix=x86_64-w64-mingw32-
+make
+mkdir -p /path/to/phira/prpr-avc/static-lib/x86_64-pc-windows-gnu
+cp */*.a /path/to/phira/prpr-avc/static-lib/x86_64-pc-windows-gnu
 ```
 
 ## Before running
