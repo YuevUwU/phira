@@ -1,3 +1,5 @@
+# Build Instruction
+
 ## Install Dependencies
 
 ### Debian / Ubuntu / Linux Mint
@@ -96,7 +98,7 @@ You can find the built binary at `phira/target/<platform>/release/phira-main`.
 As of v0.6.2, phira supports compilation with these optional or unfinished features.  
 You can enable them via `-F <FEATURES>` or `--features <FEATURES>`. For example:
 
-```
+```sh
 cargo build --package phira-main --features "phira/chat,phira/event_debug"
 ```
 
@@ -108,13 +110,18 @@ cargo build --package phira-main --features "phira/chat,phira/event_debug"
 | `phira/chat`        | Message service in multiplayer rooms. Due to laws in China, the message censorship feature is still to be developed.                                             |
 | `phira/event_debug` | UML debugging support for event development. The event content will be changed in real time according to the test.uml in the same folder as the executable file. |
 
-### Build FFmpeg Static Library (Test failed in WSL Ubuntu22.04)
+### Build FFmpeg Static Library _(Test failed in WSL Ubuntu22.04)_
 
 The `static-lib.zip` we provided only support the build of `x86_64-unknown-linux-gnu` and `x86_64-pc-windows-gnu`.  
 In order to try compiling for other platforms, or for those who want to build their own, you can refer to the following tutorial.  
-There are some additional dependencies you need to install:
+
+#### Additional Dependencies
+
 - yasm
-```
+
+#### Commands
+
+```sh
 # Build for your device (Linux/Android)
 git clone https://git.ffmpeg.org/ffmpeg.git --depth=1
 cd ffmpeg && mkdir build && cd build
@@ -194,7 +201,7 @@ Double click to open `phira-main` or `phira-main.exe`
 
 ### From Command Line
 
-```
+```sh
 # Linux
 ./phira-main
 
