@@ -151,14 +151,11 @@ cp */*.a /path/to/phira/prpr-avc/static-lib/x86_64-pc-windows-gnu
 ## Before running
 
 Some assets have to be obtained from the release.
-For convenience, we put the binary in a example path `phira-dev`.
+For convenience, we put the binary in a example path `out`.
 
 ### x86_64-unknown-linux-gnu
 
 ```bash
-mkdir phira-dev
-cd phira-dev
-
 # Get latest release
 curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
   | grep -o '"browser_download_url": *"[^"]*"' \
@@ -167,18 +164,19 @@ curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
   | sed 's/"browser_download_url": "//' \
   | sed 's/"$//' \
   | xargs -n 1 curl -o latest.zip -L
-unzip latest.zip
+
+unzip latest.zip -d out
+
+# Replace assets
+cp -rf "$PHIRA_DIR/assets" "$OUTPUT_DIR/assets"
 
 # Replace binary
-cp phira/target/x86_64-unknown-linux-gnu/release/phira-main .
+cp -f phira/target/x86_64-unknown-linux-gnu/release/phira-main out/phira-main
 ```
 
 ### x86_64-pc-windows-gnu
 
 ```bash
-mkdir phira-dev
-cd phira-dev
-
 # Get latest release
 curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
   | grep -o '"browser_download_url": *"[^"]*"' \
@@ -187,24 +185,28 @@ curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
   | sed 's/"browser_download_url": "//' \
   | sed 's/"$//' \
   | xargs -n 1 curl -o latest.zip -L
-unzip latest.zip
+
+unzip latest.zip -d out
+
+# Replace assets
+cp -rf "$PHIRA_DIR/assets" "$OUTPUT_DIR/assets"
 
 # Replace binary
-cp phira/target/x86_64-pc-windows-gnu/release/phira-main.exe .
+cp -f phira/target/x86_64-pc-windows-gnu/release/phira-main.exe out/phira-main.exe
 ```
 
 ## Run
 
 ### From File Explorer
 
-Double click to open `phira-main` or `phira-main.exe`
+Double click to open `out/phira-main` or `out\phira-main.exe`
 
 ### From Command Line
 
 ```sh
 # Linux
-./phira-main
+out/phira-main
 
 # Windows
-.\phira-main.exe
+out\phira-main.exe
 ```
