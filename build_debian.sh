@@ -150,11 +150,12 @@ rustup target add x86_64-unknown-linux-gnu
 echo -e "${GREEN}Building...${NC}"
 cargo build --target=x86_64-unknown-linux-gnu --package phira-main $build_args
 
-rm -rf "$OUTPUT_DIR"
-mkdir "$OUTPUT_DIR"
+echo -e "${GREEN}Packaging...${NC}"
+
+mkdir -p "$OUTPUT_DIR"
+rm -rf "$OUTPUT_DIR"/{assets,cache,LICENSE,phira-main}
 
 # Packaging
-echo -e "${GREEN}Packaging...${NC}"
 if [ ! -f "$LATEST_PATH" ]; then
     echo -e "${GREEN}Latest release not found.${NC}"
     echo -e "${GREEN}Downloading latest release...${NC}"
