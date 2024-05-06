@@ -148,7 +148,7 @@ echo -e "${GREEN}Confirming toolchain has been downloaded...${NC}"
 rustup target add x86_64-unknown-linux-gnu
 
 echo -e "${GREEN}Building...${NC}"
-# cargo build --target=x86_64-unknown-linux-gnu --package phira-main $build_args
+cargo build --target=x86_64-unknown-linux-gnu --package phira-main $build_args
 
 rm -rf "$OUTPUT_DIR"
 mkdir "$OUTPUT_DIR"
