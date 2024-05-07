@@ -85,9 +85,9 @@ You can find the built binary at `phira/target/<platform>/release/phira-main`.
 
 ### Build Arguments
 
-| Argument              | Description                                                                                                                                                                                                                                                                            |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-r`, `--release`     | Build artifacts with optimizations, but takes longer to compile. It's recommended to delete it during development.                                                                                                                                                                     |
+| Argument | Description |
+|:---:|:---:|
+| `-r`, `--release` | Build artifacts with optimizations, but takes longer to compile. It's recommended to delete it during development. |
 | `--target [<TRIPLE>]` | Build for the given architecture. If not added, the default architecture will be used, which is determined by the selection during installation. Run `rustc --print target-list` for a list of supported targets. However, phira may not support compilation of certain architectures. |
 
 > [!NOTE]
@@ -102,12 +102,12 @@ You can enable them via `-F <FEATURES>` or `--features <FEATURES>`. For example:
 cargo build --package phira-main --features "phira/chat,phira/event_debug"
 ```
 
-| Feature             | Description                                                                                                                                                      |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `phira/closed`      | (Unavailable) This feature is closed source and cannot be compiled by most users.                                                                                |
-| `phira/video`       | (Useless) Video support. For v0.6.2, the feature is a default and neccessary feature of prpr. Turning it on or off doesn't affect the feature.                   |
-| `phira/aa`          | Enable anti-addiction measures. Due to laws in China, Android users will be required to fill in the name-based authentication system.                            |
-| `phira/chat`        | Message service in multiplayer rooms. Due to laws in China, the message censorship feature is still to be developed.                                             |
+| Feature | Description |
+|:---:|:---:|
+| `phira/closed` | For copyright protection and ranking fairness, this function is not open to build. |
+| `phira/video` | (Useless) Video support. For v0.6.2, the feature is a default and neccessary feature of prpr. Turning it on or off doesn't affect the feature. |
+| `phira/aa` | Enable anti-addiction measures. Due to laws in China, Android users will be required to fill in the name-based authentication system. |
+| `phira/chat` | Message service in multiplayer rooms. Due to laws in China, the message censorship feature is still to be developed. |
 | `phira/event_debug` | UML debugging support for event development. The event content will be changed in real time according to the test.uml in the same folder as the executable file. |
 
 ### Build FFmpeg Static Library _(Test failed in WSL Ubuntu22.04)_
