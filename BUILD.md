@@ -156,6 +156,9 @@ For convenience, we put the binary in a example path `out`.
 ### x86_64-unknown-linux-gnu
 
 ```bash
+# Navigate to Phira repo directory
+cd /path/to/phira
+
 # Get latest release
 curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
   | grep -o '"browser_download_url": *"[^"]*"' \
@@ -168,15 +171,18 @@ curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
 unzip latest.zip -d out
 
 # Replace assets
-cp -rf "$PHIRA_DIR/assets" "$OUTPUT_DIR/assets"
+cp -rf assets out/assets
 
 # Replace binary
-cp -f phira/target/x86_64-unknown-linux-gnu/release/phira-main out/phira-main
+cp -f target/x86_64-unknown-linux-gnu/release/phira-main out/phira-main
 ```
 
 ### x86_64-pc-windows-gnu
 
 ```bash
+# Navigate to Phira repo directory
+cd /path/to/phira
+
 # Get latest release
 curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
   | grep -o '"browser_download_url": *"[^"]*"' \
@@ -189,10 +195,10 @@ curl -s https://api.github.com/repos/TeamFlos/phira/releases/latest \
 unzip latest.zip -d out
 
 # Replace assets
-cp -rf "$PHIRA_DIR/assets" "$OUTPUT_DIR/assets"
+cp -rf assets out/assets
 
 # Replace binary
-cp -f phira/target/x86_64-pc-windows-gnu/release/phira-main.exe out/phira-main.exe
+cp -f target/x86_64-pc-windows-gnu/release/phira-main.exe out/phira-main.exe
 ```
 
 ## Run
@@ -207,6 +213,9 @@ Double click to open `out/phira-main` or `out\phira-main.exe`
 # Linux
 out/phira-main
 
-# Windows
+# Windows (WSL)
+out/phira-main.exe
+
+# Windows (CMD/PowerShell)
 out\phira-main.exe
 ```
