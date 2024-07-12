@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck shell=bash
 
-set -e
+set -eo pipefail
 
 # Formatting variable
 GREEN='\033[0;32m'
@@ -22,7 +22,9 @@ ARCHIVE_NAME=""
 OPEN=false
 OPEN_TARGET=""
 NO_CONFIRMATION=false
-BUILD_ARGS=""
+BUILD_ARGS=()
+
+TEMPDIR=""
 
 usage() {
     cat <<EOF
@@ -55,11 +57,35 @@ DEFAULT_OPEN_TARGET_PRIORITY:
 EOF
 }
 
+error() {
+    echo -e "${YELLOW}Error: $*${NC}" >&2
+    exit 1
+}
+
+log() {
+    echo -e "${GREEN}$*${NC}"
+}
+
+confirm_action() {
+    if [[ "$NO_CONFIRMATION" = true ]]; then
+        return 0
+    fi
+    read -rp "$1 (y/N): " response
+    [[ ${response,,} =~ ^y(es)?$ ]]
+}
+
+cleanup() {
+    if [[ -n "$TEMPDIR" && -d "$TEMPDIR" ]]; then
+        rm -rf "$TEMPDIR"
+    fi
+}
+
+trap cleanup EXIT
+
 main() {
     # Parse primary commands
     while [[ $# -gt 0 ]]; do
-        key="$1"
-        case $key in
+        case $1 in
         -h | --help)
             usage
             exit 0
@@ -117,72 +143,49 @@ main() {
             shift
             ;;
         *)
-            BUILD_ARGS+=" $1"
+            BUILD_ARGS+=("$1")
             shift
             ;;
         esac
     done
 
-    if [ -z "$PROFILE" ]; then
-        if [ "$RELEASE" = true ]; then
-            BUILD_ARGS+=" --release"
+    if [[ -z "$PROFILE" ]]; then
+        if [[ "$RELEASE" = true ]]; then
+            BUILD_ARGS+=("--release")
             PROFILE="release"
         else
             PROFILE="debug"
         fi
     else
-        BUILD_ARGS+=" --profile=$PROFILE"
+        BUILD_ARGS+=("--profile=$PROFILE")
     fi
 
     # Default target
-    if ! [ ${#TARGET[@]} -ne 0 ]; then
+    if [[ ${#TARGET[@]} -eq 0 ]]; then
         if uname -r | grep -qe "[Mm]icrosoft"; then
             TARGET=("x86_64-pc-windows-gnu")
         else
             TARGET=("x86_64-unknown-linux-gnu")
         fi
-        BUILD_ARGS+=" --target=${TARGET[0]}"
+        BUILD_ARGS+=("--target=${TARGET[0]}")
     else
-        # log Waiting for target list...
-        # AVAILABLE_TRIPLES="$(rustc --print target-list)"
         for triple in "${TARGET[@]}"; do
-        #     echo "$AVAILABLE_TRIPLES" | grep -qE "^$triple\$" || error "Unknown target triple: $triple"
-            BUILD_ARGS+=" --target=$triple"
+            BUILD_ARGS+=("--target=$triple")
         done
     fi
 
-    TARGET_COMMA=$(join_arr , "${TARGET[@]}")
+    TARGET_COMMA=$(IFS=,; echo "${TARGET[*]}")
     log "Build target(s): $TARGET_COMMA"
 
-    if ! $SKIP_DEP_CHECK; then
+    if [[ "$SKIP_DEP_CHECK" = false ]]; then
         log "Check dependencies..."
-
         check_dep
-
-        # Check if Rust is installed
-        if ! command -v rustc >/dev/null; then
-
-            if $NO_CONFIRMATION; then
-                rust_install
-            else
-                echo -ne "Rust is not installed. Do you want to install Rust now? (Y/n)"
-                read -r install_rust
-                case $install_rust in
-                [Yy]*)
-                    rust_install
-                    ;;
-                [Nn]* | *)
-                    log "Rust installation aborted."
-                    exit 0
-                    ;;
-                esac
-            fi
-        fi
+        check_rust
     fi
 
-    # Check FFmpeg library support basically
+    # Check FFmpeg library support
     for triple in "${TARGET[@]}"; do
-        if [ ! -d "$PRPR_AVC_LIBS/$triple" ]; then
+        if [[ ! -d "$PRPR_AVC_LIBS/$triple" ]]; then
             log "FFmpeg static libraries not found."
             get_static_libs
             break
@@ -190,32 +193,30 @@ main() {
     done
 
     for triple in "${TARGET[@]}"; do
-        if [ ! -d "$PRPR_AVC_LIBS/$triple" ]; then
-            error "The existing static-lib does not support $triple. Please build manually from FFmpeg source code and put it into $PRPR_AVC_LIBS/$triple"
-        fi
+        [[ -d "$PRPR_AVC_LIBS/$triple" ]] || error "The existing static-lib does not support $triple. Please build manually from FFmpeg source code and put it into $PRPR_AVC_LIBS/$triple"
     done
 
     # Prepare to build
-    cd "$PHIRA_HOME" || exit
+    cd "$PHIRA_HOME" || error "Failed to change directory to $PHIRA_HOME."
 
-    # Build for Linux x86_64
+    # Confirm toolchain download
     log "Confirming toolchain has been downloaded..."
     for triple in "${TARGET[@]}"; do
-        rustup target add "$triple"
+        rustup target add "$triple" || error "Failed to add target $triple."
     done
 
-    log "Build args: $BUILD_ARGS"
+    log "Build args: ${BUILD_ARGS[*]}"
     log "Building..."
 
-    # shellcheck disable=SC2086
-    cargo build --bin phira-main $BUILD_ARGS
+    # Build
+    cargo build --bin phira-main "${BUILD_ARGS[@]}" || error "Build failed."
     log "Build successful!"
     
-    for tuple in "${TARGET[@]}"; do
-        package_and_archive "$tuple"
+    for triple in "${TARGET[@]}"; do
+        package_and_archive "$triple"
     done
 
-    if $OPEN; then
+    if [[ "$OPEN" = true ]]; then
         set_open_target
 
         log "Opening phira on $OPEN_TARGET..."
@@ -223,75 +224,42 @@ main() {
     fi
 }
 
-error() {
-    local msg=$*
-
-    echo -e "${YELLOW}$msg${NC}"
-    exit 1
-}
-
-log() {
-    local msg=$*
-
-    echo -e "${GREEN}$msg${NC}"
-}
-
-join_arr() {
-  local IFS="$1"
-  shift
-  echo "$*"
-}
-
-rust_install() {
-    log "Installing Rust..."
-
-    if $NO_CONFIRMATION; then
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    else
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    fi
-
-    . "$HOME/.cargo/env"
-
-    log "Rust has been installed"
-    log "If you get error, please restart terminal and re-run this script."
-}
-
 check_dep() {
-    SUDO=""
-    if [ "$EUID" -ne 0 ]; then
+    if [[ $EUID -ne 0 ]]; then
+        if ! sudo -v; then
+            error "This script requires sudo privileges. Please run with sudo or grant sudo permissions."
+        fi
         SUDO="sudo"
-        sudo echo -n || exit 126
+    else
+        SUDO=""
     fi
 
     for triple in "${TARGET[@]}"; do
         case $triple in
         x86_64-unknown-linux-gnu)
             if command -v apt-get >/dev/null; then
-                $SUDO apt-get update
-                $SUDO apt-get install -y curl zip unzip gcc make perl pkg-config libgtk-3-dev libasound2-dev
+                $SUDO apt-get update || error "Failed to update package lists."
+                $SUDO apt-get install -y curl zip unzip gcc make perl pkg-config libgtk-3-dev libasound2-dev || error "Failed to install required packages."
             elif command -v pacman >/dev/null; then
-                $SUDO pacman -Syu --noconfirm
-                $SUDO pacman -S curl wget zip unzip gcc make perl pkg-config gtk3 alsa-lib --noconfirm
+                $SUDO pacman -Syu --noconfirm || error "Failed to update system."
+                $SUDO pacman -S curl wget zip unzip gcc make perl pkg-config gtk3 alsa-lib --noconfirm || error "Failed to install required packages."
             elif command -v dnf >/dev/null; then
-                $SUDO dnf install -y curl wget zip unzip gcc make perl pkgconf-pkg-config gtk3-devel alsa-lib-devel
+                $SUDO dnf install -y curl wget zip unzip gcc make perl pkgconf-pkg-config gtk3-devel alsa-lib-devel || error "Failed to install required packages."
             else
-                error "No supported package manager found. Please install a package similar to the following and add the argument \`--skip-dep-check\` when re-executing shell script:
-curl zip unzip gcc make pkg-config gtk3-devel alsa-lib"
+                error "No supported package manager found. Please install the following packages manually and add the argument \`--skip-dep-check\` when re-executing shell script: curl zip unzip gcc make perl pkg-config libgtk-3-dev libasound2-dev"
             fi
             ;;
         x86_64-pc-windows-gnu)
             if command -v apt-get >/dev/null; then
-                $SUDO apt-get update
-                $SUDO apt-get install -y curl zip unzip gcc make libfindbin-libs-perl gcc-mingw-w64
+                $SUDO apt-get update || error "Failed to update package lists."
+                $SUDO apt-get install -y curl zip unzip gcc make libfindbin-libs-perl gcc-mingw-w64 || error "Failed to install required packages."
             elif command -v pacman >/dev/null; then
-                $SUDO pacman -Syu --noconfirm
-                $SUDO pacman -S curl zip unzip gcc make perl mingw-w64-gcc --noconfirm
+                $SUDO pacman -Syu --noconfirm || error "Failed to update system."
+                $SUDO pacman -S curl zip unzip gcc make perl mingw-w64-gcc --noconfirm || error "Failed to install required packages."
             elif command -v dnf >/dev/null; then
-                $SUDO dnf install -y curl zip unzip gcc make perl mingw64-gcc
+                $SUDO dnf install -y curl zip unzip gcc make perl mingw64-gcc || error "Failed to install required packages."
             else
-                error "No supported package manager found. Please install a package similar to the following and add the argument \`--skip-dep-check\` when re-executing shell script:
-curl zip unzip gcc make mingw64-gcc perl"
+                error "No supported package manager found. Please install the following packages manually and add the argument \`--skip-dep-check\` when re-executing shell script: curl zip unzip gcc make perl (libfindbin-libs-perl) gcc-mingw-w64"
             fi
             ;;
         *)
@@ -301,47 +269,80 @@ curl zip unzip gcc make mingw64-gcc perl"
     done
 }
 
+check_rust() {
+    if ! command -v rustc >/dev/null; then
+        if [[ "$NO_CONFIRMATION" = true ]] || confirm_action "Rust is not installed. Do you want to install Rust now?"; then
+            rust_install
+        else
+            error "Rust is required but not installed. Aborting."
+        fi
+    fi
+}
+
+rust_install() {
+    log "Installing Rust..."
+
+    TEMPDIR=$(mktemp -d)
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$TEMPDIR/rustup.sh" || error "Failed to download Rust installer."
+    
+    if [[ "$NO_CONFIRMATION" = true ]]; then
+        sh "$TEMPDIR/rustup.sh" -y || error "Rust installation failed."
+    else
+        sh "$TEMPDIR/rustup.sh" || error "Rust installation failed."
+    fi
+
+    # shellcheck disable=SC1091
+    . "$HOME/.cargo/env"
+
+    log "Rust has been installed."
+    log "If you get an error, please restart the terminal and re-run this script."
+}
+
 get_static_libs() {
-    # Get prebuilt avcodec binaries
-    cd "$PHIRA_HOME"
+    cd "$PHIRA_HOME" || error "Failed to change directory to $PHIRA_HOME."
     log "Downloading prebuilt static-lib..."
 
-    curl -LO https://github.com/TeamFlos/phira-docs/raw/main/src/phira_build_guide/prpr-avc.zip
+    curl -LO https://github.com/TeamFlos/phira-docs/raw/main/src/phira_build_guide/prpr-avc.zip || error "Failed to download prpr-avc.zip."
 
     log "Unzipping..."
-    unzip -q prpr-avc.zip
+    unzip -q prpr-avc.zip || error "Failed to unzip prpr-avc.zip."
 
-    rm prpr-avc.zip
+    rm prpr-avc.zip || log "Warning: Failed to remove prpr-avc.zip."
 }
 
 package_and_archive() {
-    local tuple=$1
-    local output_dir="$PHIRA_HOME/out/$tuple/$PROFILE"
+    local triple=$1
+    local output_dir="$PHIRA_HOME/out/$triple/$PROFILE"
 
-    log "Packaging for $tuple..."
+    log "Packaging for $triple..."
 
-    mkdir -p "$output_dir"
+    mkdir -p "$output_dir" || error "Failed to create output directory."
 
-    rm -rf "$output_dir"/{assets,cache,LICENSE,phira-main}
-
-    if $CLEAR_DATA; then
-        rm -rf "$output_dir"/data
+    if confirm_action "This will remove existing files in $output_dir. Are you sure?"; then
+        rm -rf "$output_dir"/{assets,cache,LICENSE,phira-main}
+    else
+        log "Packaging cancelled by user."
+        return
     fi
 
+    if [[ "$CLEAR_DATA" = true ]]; then
+        rm -rf "$output_dir"/data || log "Warning: Failed to remove data directory."
+    fi
+
+    local target_os
     if [[ $triple == *"windows"* ]]; then
-        local target_os="windows"
+        target_os="windows"
     else
-        local target_os="linux"
+        target_os="linux"
     fi
     
-    if [ ! "$LATEST_PATH" ];then
+    if [[ -z "$LATEST_PATH" ]]; then
         LATEST_PATH="official-$target_os.zip"
     fi
     
     # Packaging
-    if [ ! -f "$LATEST_PATH" ]; then
-        log "Latest release not found."
-        log "Downloading latest release..."
+    if [[ ! -f "$LATEST_PATH" ]]; then
+        log "Latest release not found. Downloading..."
 
         LATEST_PATH="official-$target_os.zip"
 
@@ -352,42 +353,42 @@ package_and_archive() {
             grep ".zip\"" |
             sed 's/"browser_download_url": "//' |
             sed 's/"$//' |
-            xargs -n 1 curl -o "$LATEST_PATH" -L
+            xargs -n 1 curl -o "$LATEST_PATH" -L || error "Failed to download latest release."
     fi
 
     log "Unzipping latest release..."
-    unzip -q "$LATEST_PATH" -d "$output_dir"
+    unzip -q "$LATEST_PATH" -d "$output_dir" || error "Failed to unzip latest release."
 
     log "Copying and Replacing assets..."
-    cp -ru "$PHIRA_HOME/assets/" "$output_dir/assets"
+    cp -rf "$PHIRA_HOME/assets/" "$output_dir/assets" || error "Failed to copy assets."
 
     log "Copying and Replacing binary file..."
     if [[ $target_os == "windows" ]]; then
-        cp -u "$PHIRA_HOME/target/$triple/$PROFILE/phira-main.exe" "$output_dir/"
+        cp -u "$PHIRA_HOME/target/$triple/$PROFILE/phira-main.exe" "$output_dir/" || error "Failed to copy binary file."
     else
-        cp -u "$PHIRA_HOME/target/$triple/$PROFILE/phira-main" "$output_dir/"
+        cp -u "$PHIRA_HOME/target/$triple/$PROFILE/phira-main" "$output_dir/" || error "Failed to copy binary file."
     fi
 
     log "Packaging successful!"
     log "Binary is saved in \`$output_dir/phira-main\`."
 
-    if $ARCHIVE; then
-        cd "$output_dir"
+    if [[ "$ARCHIVE" = true ]]; then
+        cd "$output_dir" || error "Failed to change directory to $output_dir."
 
         log "Compressing..."
-        ARCHIVE_NAME=Phira-$tuple-$PROFILE-$(date +%s%N).zip
-        zip -rq "$PHIRA_HOME/$ARCHIVE_NAME" .
+        ARCHIVE_NAME=${ARCHIVE_NAME:-"Phira-$triple-$PROFILE-$(date +%s%N).zip"}
+        zip -rq "$PHIRA_HOME/$ARCHIVE_NAME" . || error "Failed to create archive."
 
         log "Compression successful!"
         log "The zip file is saved in \`$PHIRA_HOME/$ARCHIVE_NAME\`."
     fi
 }
 
-search_tuple_in_target() {
-    local target_tuple=$1
+search_triple_in_target() {
+    local target_triple=$1
 
-    for tuple in "${TARGET[@]}"; do
-        if [ "$tuple" = "$target_tuple" ]; then
+    for triple in "${TARGET[@]}"; do
+        if [[ "$triple" = "$target_triple" ]]; then
             return 0
         fi
     done
@@ -396,11 +397,11 @@ search_tuple_in_target() {
 }
 
 set_open_target() {
-    if [ -n "$OPEN_TARGET" ]; then
+    if [[ -n "$OPEN_TARGET" ]]; then
         return 0
     fi
 
-    if uname -r | grep -qe "[Mm]icrosoft" && search_tuple_in_target "x86_64-pc-windows-gnu"; then
+    if uname -r | grep -qe "[Mm]icrosoft" && search_triple_in_target "x86_64-pc-windows-gnu"; then
         OPEN_TARGET="x86_64-pc-windows-gnu"
         return 0
     fi
@@ -408,12 +409,12 @@ set_open_target() {
     local default_target
     default_target=$(rustc -vV | sed -n 's|host: ||p')
 
-    if search_tuple_in_target "$default_target"; then
+    if search_triple_in_target "$default_target"; then
         OPEN_TARGET="$default_target"
         return 0
     fi
 
-    if search_tuple_in_target "x86_64-unknown-linux-gnu"; then
+    if search_triple_in_target "x86_64-unknown-linux-gnu"; then
         OPEN_TARGET="x86_64-unknown-linux-gnu"
         return 0
     fi
