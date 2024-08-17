@@ -53,9 +53,9 @@ def report(parent_dir, source_lang, target_lang):
                         changes[key]["new_line"] = line.strip()
         return changes
 
-    def log_changes(path, key, source_lang_translation, target_lang_translation):
+    def log_changes(relative_path, key, source_lang_translation, target_lang_translation):
         print("```plaintext")
-        print(f"{path} - {key}  ")
+        print(f"{relative_path} - {key}  ")
         print(f"{source_lang}: {source_lang_translation}  ")
         print(f"{target_lang}: {target_lang_translation}  ")
         print("```")
@@ -87,11 +87,11 @@ def report(parent_dir, source_lang, target_lang):
 
         return key_diff
 
-    def log_diff(missing_keys, title):
+    def log_diff(diff_keys, title, redirect_lang_dir):
         print(title)
-        for file_path, keys in missing_keys.items():
+        for relative_path, keys in diff_keys.items():
             for key in keys:
-                print(f"{file_path} - {key}  ")
+                print(f"[{relative_path}](https://github.com/TeamFlos/phira/tree/main/{source_lang_dir}/{relative_path}) - {key}  ")
 
     def print_append_needed():
         target_lang_files = get_file_paths(target_lang_dir)
@@ -102,7 +102,7 @@ def report(parent_dir, source_lang, target_lang):
         )
 
         if any(len(v) != 0 for v in key_diff.values()):
-            log_diff(key_diff, "#### Append needed")
+            log_diff(key_diff, "#### Append needed", source_lang_dir)
 
     def print_delete_needed():
         target_lang_files = get_file_paths(target_lang_dir)
@@ -113,7 +113,7 @@ def report(parent_dir, source_lang, target_lang):
         )
 
         if any(len(v) != 0 for v in key_diff.values()):
-            log_diff(key_diff, "#### Delete needed")
+            log_diff(key_diff, "#### Delete needed", target_lang_dir)
 
     def print_edited_translations():
         print("#### May need Edit")
@@ -175,17 +175,17 @@ def report(parent_dir, source_lang, target_lang):
                             relative_path = os.path.relpath(file_path, source_lang_dir)
                             may_changed.add((relative_path, key))
 
-        for path, key in may_changed:
-            source_lang_translation = source_lang_translations[path][key]
-            target_lang_file: dict | None = target_lang_translations.get(path)
+        for relative_path, key in may_changed:
+            source_lang_translation = source_lang_translations[relative_path][key]
+            target_lang_file: dict | None = target_lang_translations.get(relative_path)
             if target_lang_file is not None:
                 target_lang_translation = target_lang_file.get(key)
             else:
                 target_lang_translation = None
-            log_changes(path, key, source_lang_translation, target_lang_translation)
+            log_changes(relative_path, key, source_lang_translation, target_lang_translation)
 
-    source_lang_dir = f"{parent_dir}/{source_lang}/"
-    target_lang_dir = f"{parent_dir}/{target_lang}/"
+    source_lang_dir = f"{parent_dir}/{source_lang}"
+    target_lang_dir = f"{parent_dir}/{target_lang}"
     print(f"### {target_lang_dir}")
     print_append_needed()
     print_delete_needed()
