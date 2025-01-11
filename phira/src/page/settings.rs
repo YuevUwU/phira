@@ -270,6 +270,8 @@ struct GeneralList {
     icon_lang: SafeTexture,
 
     lang_btn: ChooseButton,
+    windows_fullscreen_btn: DRectButton,
+    windows_multitouch_btn: DRectButton,
     cache_btn: DRectButton,
     offline_btn: DRectButton,
     server_status_btn: DRectButton,
@@ -299,6 +301,10 @@ impl GeneralList {
                         .and_then(|ident| LANG_IDENTS.iter().position(|it| *it == ident))
                         .unwrap_or_default(),
                 ),
+            #[cfg(target_os = "windows")]
+            windows_fullscreen_btn: DRectButton::new(),
+            #[cfg(target_os = "windows")]
+            windows_multitouch_btn: DRectButton::new(),
             cache_btn: DRectButton::new(),
             offline_btn: DRectButton::new(),
             server_status_btn: DRectButton::new(),
@@ -350,12 +356,6 @@ impl GeneralList {
         let data = get_data_mut();
         let config = &mut data.config;
         if self.lang_btn.touch(touch, t) {
-            return Ok(Some(false));
-        }
-        if self.cache_btn.touch(touch, t) {
-            fs::remove_dir_all(dir::cache()?)?;
-            self.update_cache_size()?;
-            show_message(tl!("item-cache-cleared")).ok();
             return Ok(Some(false));
         }
         if self.offline_btn.touch(touch, t) {
@@ -451,6 +451,16 @@ impl GeneralList {
             let r = Rect::new(rt + 0.01, (ITEM_HEIGHT - w) / 2., w, w);
             ui.fill_rect(r, (*self.icon_lang, r));
             self.lang_btn.render(ui, rr, t);
+        }
+        #[cfg(target_os = "windows")]
+        item! {
+            render_title(ui, tl!("item-fullscreen"), Some(tl!("item-fullscreen-sub")));
+            render_switch(ui, rr, t, &mut self.windows_fullscreen_btn, config.windows_fullscreen_mode);
+        }
+        #[cfg(target_os = "windows")]
+        item! {
+            render_title(ui, tl!("item-multitouch"), Some(tl!("item-multitouch-sub")));
+            render_switch(ui, rr, t, &mut self.windows_multitouch_btn, config.windows_multitouch_mode);
         }
         item! {
             render_title(ui, tl!("item-offline"), Some(tl!("item-offline-sub")));
