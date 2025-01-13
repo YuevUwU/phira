@@ -2,7 +2,8 @@ use super::{BpmList, Effect, JudgeLine, JudgeLineKind, Matrix, Resource, UIEleme
 use crate::{fs::FileSystem, judge::JudgeStatus, ui::Ui};
 use anyhow::{Context, Result};
 use macroquad::prelude::*;
-use std::cell::RefCell;
+use sasa::AudioClip;
+use std::{cell::RefCell, collections::HashMap};
 use tracing::warn;
 
 #[derive(Default)]
@@ -19,19 +20,28 @@ pub struct ChartSettings {
     pub hold_partial_cover: bool,
 }
 
+pub type HitSoundMap = HashMap<String, AudioClip>;
+
 pub struct Chart {
     pub offset: f32,
     pub lines: Vec<JudgeLine>,
     pub bpm_list: RefCell<BpmList>,
+
     pub settings: ChartSettings,
     pub extra: ChartExtra,
 
+    /// Line order according to z-index, lines with attach_ui will be removed from this list
+    ///
+    /// Store the index of the line in z-index ascending order
     pub order: Vec<usize>,
+    /// TODO: docs from RPE
     pub attach_ui: [Option<usize>; 7],
+
+    pub hitsounds: HitSoundMap,
 }
 
 impl Chart {
-    pub fn new(offset: f32, lines: Vec<JudgeLine>, bpm_list: BpmList, settings: ChartSettings, extra: ChartExtra) -> Self {
+    pub fn new(offset: f32, lines: Vec<JudgeLine>, bpm_list: BpmList, settings: ChartSettings, extra: ChartExtra, hitsounds: HitSoundMap) -> Self {
         let mut attach_ui = [None; 7];
         let mut order = (0..lines.len())
             .filter(|it| {
@@ -53,6 +63,8 @@ impl Chart {
 
             order,
             attach_ui,
+
+            hitsounds,
         }
     }
 

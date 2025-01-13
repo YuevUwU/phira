@@ -1,3 +1,15 @@
+//! Core module for prpr, submodules:
+//!   - [crate::core::anim]
+//!   - [crate::core::chart]
+//!   - [crate::core::effect]
+//!   - [crate::core::line]
+//!   - [crate::core::note]
+//!   - [crate::core::object]
+//!   - [crate::core::render]
+//!   - [crate::core::resource]
+//!   - [crate::core::smooth]
+//!   - [crate::core::tween]
+
 pub use macroquad::color::Color;
 
 pub const NOTE_WIDTH_RATIO_BASE: f32 = 0.13175016;
@@ -13,17 +25,17 @@ mod anim;
 pub use anim::{Anim, AnimFloat, AnimVector, Keyframe};
 
 mod chart;
-pub use chart::{Chart, ChartExtra, ChartSettings};
+pub use chart::{Chart, ChartExtra, ChartSettings, HitSoundMap};
 
 mod effect;
 pub use effect::{Effect, Uniform};
 
 mod line;
-pub use line::{JudgeLine, JudgeLineCache, JudgeLineKind, UIElement};
+pub use line::{GifFrames, JudgeLine, JudgeLineCache, JudgeLineKind, UIElement};
 
 mod note;
 use macroquad::prelude::set_pc_assets_folder;
-pub use note::{BadNote, Note, NoteKind, RenderConfig};
+pub use note::{BadNote, HitSound, Note, NoteKind, RenderConfig};
 
 mod object;
 pub use object::{CtrlObject, Object};
@@ -32,7 +44,7 @@ mod render;
 pub use render::{copy_fbo, internal_id, MSRenderTarget};
 
 mod resource;
-pub use resource::{NoteStyle, ParticleEmitter, ResPackInfo, Resource, ResourcePack, DPI_VALUE};
+pub use resource::{NoteStyle, ParticleEmitter, ResPackInfo, Resource, ResourcePack, BUFFER_SIZE, DPI_VALUE};
 
 mod smooth;
 pub use smooth::Smooth;
@@ -68,6 +80,7 @@ pub fn init_assets() {
 }
 
 #[derive(serde::Deserialize)]
+/// `(i, n, d)`: `i + n / d`
 pub struct Triple(i32, u32, u32);
 impl Default for Triple {
     fn default() -> Self {
@@ -83,12 +96,18 @@ impl Triple {
 
 #[derive(Default)] // the default is a dummy
 pub struct BpmList {
-    elements: Vec<(f32, f32, f32)>, // (beats, time, bpm)
+    /// (beats, time, bpm)
+    /// time in seconds
+    elements: Vec<(f32, f32, f32)>,
+    /// cursor for searching, value is the index of `elements`
     cursor: usize,
 }
 
 impl BpmList {
-    pub fn new(ranges: Vec<(f32, f32)> /*(beat, bpm)*/) -> Self {
+    /// Create a new BpmList from a list of (beats, bpm) pairs
+    ///
+    /// Basically just calculate the time for each pair(key frame)
+    pub fn new(ranges: Vec<(f32, f32)>) -> Self {
         let mut elements = Vec::new();
         let mut time = 0.0;
         let mut last_beats = 0.0;
@@ -104,6 +123,7 @@ impl BpmList {
         BpmList { elements, cursor: 0 }
     }
 
+    /// Get the time in seconds for a given beats
     pub fn time_beats(&mut self, beats: f32) -> f32 {
         while let Some(kf) = self.elements.get(self.cursor + 1) {
             if kf.0 > beats {
@@ -118,10 +138,12 @@ impl BpmList {
         time + (beats - start_beats) * (60. / bpm)
     }
 
+    /// Get the time in seconds for a given `i + n / d`
     pub fn time(&mut self, triple: &Triple) -> f32 {
         self.time_beats(triple.beats())
     }
 
+    /// Get the beat coordinate for a given time in seconds
     pub fn beat(&mut self, time: f32) -> f32 {
         while let Some(kf) = self.elements.get(self.cursor + 1) {
             if kf.1 > time {

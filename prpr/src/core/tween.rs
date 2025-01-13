@@ -98,17 +98,18 @@ fn bounce(x: f32) -> f32 {
 
 #[rustfmt::skip]
 pub static TWEEN_FUNCTIONS: [fn(f32) -> f32; 33] = [
-	|_| 0., |_| 1., |x| x,
-	f1!(sine), f2!(sine), f3!(sine),
-	f1!(quad), f2!(quad), f3!(quad),
-	f1!(cubic), f2!(cubic), f3!(cubic),
-	f1!(quart), f2!(quart), f3!(quart),
-	f1!(quint), f2!(quint), f3!(quint),
-	f1!(expo), f2!(expo), f3!(expo),
-	f1!(circ), f2!(circ), f3!(circ),
-	f1!(back), f2!(back), f3!(back),
-	f1!(elastic), f2!(elastic), f3!(elastic),
-	f1!(bounce), f2!(bounce), f3!(bounce),
+	|_| 0.,			|_| 1.,			|x| x,
+	/* In */		/* Out */		/* InOut */
+	f1!(sine),		f2!(sine),		f3!(sine),
+	f1!(quad),		f2!(quad),		f3!(quad),
+	f1!(cubic),		f2!(cubic),		f3!(cubic),
+	f1!(quart),		f2!(quart),		f3!(quart),
+	f1!(quint),		f2!(quint),		f3!(quint),
+	f1!(expo),		f2!(expo),		f3!(expo),
+	f1!(circ),		f2!(circ),		f3!(circ),
+	f1!(back),		f2!(back),		f3!(back),
+	f1!(elastic),	f2!(elastic),	f3!(elastic),
+	f1!(bounce),	f2!(bounce),	f3!(bounce),
 ];
 
 thread_local! {
@@ -318,15 +319,52 @@ impl Tweenable for Color {
 
 impl Tweenable for String {
     fn tween(x: &Self, y: &Self, t: f32) -> Self {
-        if x.is_empty() && y.is_empty() {
-            Self::new()
-        } else if y.is_empty() {
-            Self::tween(y, x, 1. - t)
-        } else if x.is_empty() {
-            let chars = y.chars().collect::<Vec<_>>();
-            chars[..(t * chars.len() as f32).round() as usize].iter().collect()
+        if x.contains("%P%") && y.contains("%P%") {
+            let x = x.replace("%P%", "");
+            let y = y.replace("%P%", "");
+            if t >= 1. {
+                y
+            } else if t <= 0. {
+                x
+            } else {
+                let x: f32 = x.parse().unwrap_or(0.0);
+                let y: f32 = y.parse().unwrap_or(0.0);
+                let value = x + t * (y - x);
+                if x.fract() == 0.0 && y.fract() == 0.0 {
+                    format!("{:.0}", value)
+                } else {
+                    format!("{:.3}", value)
+                }
+            }
         } else {
-            x.clone()
+            if x.is_empty() && y.is_empty() {
+                Self::new()
+            } else if y.is_empty() {
+                let x = if x.contains("%P%") {
+                    x.replace("%P%", "")
+                } else {
+                    x.to_string()
+                };
+                Self::tween(y, &x, 1. - t)
+            } else if x.is_empty() {
+                let chars = y.chars().collect::<Vec<_>>();
+                chars[..(t * chars.len() as f32).round() as usize].iter().collect()
+            } else {
+                let x_len = x.chars().count();
+                let y_len = y.chars().count();
+                if x.chars().zip(y.chars()).take(x_len).all(|(xc, yc)| xc == yc) {
+                    let take_num = ((y_len - x_len) as f32 * t).round() as usize + x_len;
+                    let mut text = x.clone();
+                    text.push_str(&y.chars().skip(x_len).take(take_num - x_len).collect::<String>());
+                    text
+                } else {
+                    if x.contains("%P%") {
+                        x.replace("%P%", "")
+                    } else {
+                        x.clone()
+                    }
+                }
+            }
         }
     }
 }
