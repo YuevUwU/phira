@@ -23,6 +23,10 @@ inner.rs
 
 /prpr-avc/static-lib
 
+/out
+/official-linux.zip
+/official-windows.zip
+
 # Mac
 
 ._*
