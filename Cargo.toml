@@ -23,3 +23,9 @@ strip = true
 
 [profile.dev.package."*"]
 opt-level = 2
+
+[patch."https://github.com/Mivik/prpr-miniquad"]
+miniquad = { git = "https://github.com/fhscey/prpr-miniquad" }
+
+[patch."https://github.com/Mivik/prpr-macroquad"]
+macroquad = { git = "https://github.com/fhscey/prpr-macroquad" }

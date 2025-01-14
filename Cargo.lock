@@ -1766,7 +1766,7 @@ dependencies = [
 [[package]]
 name = "macroquad"
 version = "0.3.25"
-source = "git+https://github.com/Mivik/prpr-macroquad#19119d6e3ec231502f6d64ff077114ffe1fcb04a"
+source = "git+https://github.com/fhscey/prpr-macroquad#4f3b934301c4136e7e60b20617e006ff17ae6f37"
 dependencies = [
  "bumpalo",
  "fontdue",
@@ -1780,7 +1780,7 @@ dependencies = [
 [[package]]
 name = "macroquad_macro"
 version = "0.1.7"
-source = "git+https://github.com/Mivik/prpr-macroquad#19119d6e3ec231502f6d64ff077114ffe1fcb04a"
+source = "git+https://github.com/fhscey/prpr-macroquad#4f3b934301c4136e7e60b20617e006ff17ae6f37"
 
 [[package]]
 name = "malloc_buf"
@@ -1854,7 +1854,7 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 [[package]]
 name = "miniquad"
 version = "0.3.15"
-source = "git+https://github.com/Mivik/prpr-miniquad#e8deff64a4e1211c6fd650bbb690165ba110f791"
+source = "git+https://github.com/fhscey/prpr-miniquad#e16d5e4926723cb1d0441148ee011cafdcc6db4b"
 dependencies = [
  "libc",
  "ndk-context",
