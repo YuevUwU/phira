@@ -37,7 +37,7 @@ def report(parent_dir, source_lang, target_lang):
             if line.startswith("-") or line.startswith("+"):
                 key, value = extract_fluent(line[1:].strip(), "tuple")[0]
                 if key is not None:
-                    if key != current_key:
+                    if changes.get(key) is None:
                         current_key = key
                         changes[key] = {
                             "old": None,
@@ -53,9 +53,9 @@ def report(parent_dir, source_lang, target_lang):
                         changes[key]["new_line"] = line.strip()
         return changes
 
-    def log_changes(relative_path, key, source_lang_translation, target_lang_translation):
+    def log_changes(relative_path, key, source_lang_translation, target_lang_translation, commit):
         print("```plaintext")
-        print(f"{relative_path} - {key}  ")
+        print(f"{relative_path} - {key} - {commit[:7]}")
         print(f"{source_lang}: {source_lang_translation}  ")
         print(f"{target_lang}: {target_lang_translation}  ")
         print("```")
@@ -138,7 +138,7 @@ def report(parent_dir, source_lang, target_lang):
             )
 
         commits = run_command(["git", "rev-list", "--all"]).splitlines()
-
+        # commits.remove("9ccfd2a71c0309bdd0a8b368428259224ac6515b")
         for commit in commits:
 
             diff_command = [
@@ -173,16 +173,16 @@ def report(parent_dir, source_lang, target_lang):
                             and change["old"] != change["new"]
                         ):
                             relative_path = os.path.relpath(file_path, source_lang_dir)
-                            may_changed.add((relative_path, key))
+                            may_changed.add((relative_path, key, commit))
 
-        for relative_path, key in may_changed:
+        for relative_path, key, commit in may_changed:
             source_lang_translation = source_lang_translations[relative_path][key]
             target_lang_file: dict | None = target_lang_translations.get(relative_path)
             if target_lang_file is not None:
                 target_lang_translation = target_lang_file.get(key)
             else:
                 target_lang_translation = None
-            log_changes(relative_path, key, source_lang_translation, target_lang_translation)
+            log_changes(relative_path, key, source_lang_translation, target_lang_translation, commit)
 
     source_lang_dir = f"{parent_dir}/{source_lang}"
     target_lang_dir = f"{parent_dir}/{target_lang}"
@@ -193,8 +193,8 @@ def report(parent_dir, source_lang, target_lang):
 
 
 if __name__ == "__main__":
-    SOURCE_LANG = "en-US"
-    TARGET_LANG = "fr-FR"
+    SOURCE_LANG = "zh-CN"
+    TARGET_LANG = "mn-MN"
 
     print(f"## TODO Translation Report for {TARGET_LANG}")
     print("_**NOTICE: This report doesn't detect edited multiline text**_")
