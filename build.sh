@@ -181,6 +181,7 @@ main() {
         log "Check dependencies..."
         check_dep
         check_rust
+        check_nightly
     fi
 
     # Check FFmpeg library support
@@ -202,14 +203,14 @@ main() {
     # Confirm toolchain download
     log "Confirming toolchain has been downloaded..."
     for triple in "${TARGET[@]}"; do
-        rustup target add "$triple" || error "Failed to add target $triple."
+        rustup +nightly target add "$triple" || error "Failed to add target $triple."
     done
 
     log "Build args: ${BUILD_ARGS[*]}"
     log "Building..."
 
     # Build
-    cargo build --bin phira-main "${BUILD_ARGS[@]}" || error "Build failed."
+    cargo +nightly build --bin phira-main "${BUILD_ARGS[@]}" || error "Build failed."
     log "Build successful!"
     
     for triple in "${TARGET[@]}"; do
@@ -220,7 +221,9 @@ main() {
         set_open_target
 
         log "Opening phira on $OPEN_TARGET..."
-        "$PHIRA_HOME/out/$OPEN_TARGET/$PROFILE/phira-main"
+
+        # Open Linux executable first for debugging if exists
+        "$PHIRA_HOME/out/$OPEN_TARGET/$PROFILE/phira-main" || "$PHIRA_HOME/out/$OPEN_TARGET/$PROFILE/phira-main.exe"
     fi
 }
 
@@ -295,6 +298,35 @@ rust_install() {
     . "$HOME/.cargo/env"
 
     log "Rust has been installed."
+    log "If you get an error, please restart the terminal and re-run this script."
+}
+
+check_nightly() {
+    if ! rustup toolchain list | grep -q 'nightly'; then
+        if [[ "$NO_CONFIRMATION" = true ]] || confirm_action "Rust nightly is not installed. Do you want to install Rust nightly now?"; then
+            rust_nightly_install
+        else
+            error "Rust nightly is required but not installed. Aborting."
+        fi
+    fi
+}
+
+rust_nightly_install() {
+    log "Installing Rust nightly..."
+
+    TEMPDIR=$(mktemp -d)
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$TEMPDIR/rustup.sh" || error "Failed to download Rust installer."
+    
+    if [[ "$NO_CONFIRMATION" = true ]]; then
+        sh "$TEMPDIR/rustup.sh" -y -P nightly || error "Rust nightly installation failed."
+    else
+        sh "$TEMPDIR/rustup.sh" -P nightly || error "Rust nightly installation failed."
+    fi
+
+    # shellcheck disable=SC1091
+    . "$HOME/.cargo/env"
+
+    log "Rust nightly has been installed."
     log "If you get an error, please restart the terminal and re-run this script."
 }
 

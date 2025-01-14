@@ -106,6 +106,9 @@ if ! $SKIP_DEP_CHECK; then
                 
                 source "$HOME/.cargo/env"
 
+                echo -e "${GREEN}Installing Rust nightly...${NC}"
+                rustup toolchain install nightly
+
                 echo -e "${GREEN}Rust has been installed${NC}"
                 echo -e "${YELLOW}If you get error, please restart terminal and re-run this script.${NC}"
                 ;;
@@ -145,10 +148,10 @@ fi
 
 # Build for Linux x86_64
 echo -e "${GREEN}Confirming toolchain has been downloaded...${NC}"
-rustup target add x86_64-unknown-linux-gnu
+rustup +nightly target add x86_64-unknown-linux-gnu
 
 echo -e "${GREEN}Building...${NC}"
-cargo build --target=x86_64-unknown-linux-gnu --package phira-main $build_args
+cargo +nightly build --target=x86_64-unknown-linux-gnu --package phira-main $build_args
 
 echo -e "${GREEN}Packaging...${NC}"
 
