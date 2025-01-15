@@ -392,7 +392,7 @@ package_and_archive() {
     unzip -q "$LATEST_PATH" -d "$output_dir" || error "Failed to unzip latest release."
 
     log "Copying and Replacing assets..."
-    cp -rf "$PHIRA_HOME/assets/" "$output_dir/assets" || error "Failed to copy assets."
+    cp -rf "$PHIRA_HOME/assets" "$output_dir/" || error "Failed to copy assets."
 
     log "Copying and Replacing binary file..."
     if [[ $target_os == "windows" ]]; then

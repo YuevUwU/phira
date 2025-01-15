@@ -178,7 +178,7 @@ unzip -q "$LATEST_PATH" -d "$OUTPUT_DIR"
 
 echo -e "${GREEN}Copying and Replacing assets...${NC}"
 # cp -rf "$PHIRA_HOME/assets/" "$OUTPUT_DIR/assets"
-rsync -ahIr --info=progress2 "$PHIRA_HOME/assets/" "$OUTPUT_DIR/assets"
+rsync -ahIr --info=progress2 "$PHIRA_HOME/assets" "$OUTPUT_DIR/"
 
 echo -e "${GREEN}Copying and Replacing binary file...${NC}"
 # cp -f "$PHIRA_HOME/target/x86_64-unknown-linux-gnu/debug/phira-main" "$OUTPUT_DIR/phira-main"
