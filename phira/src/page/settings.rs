@@ -269,6 +269,7 @@ fn right_rect(w: f32) -> Rect {
 #[cfg(target_os = "windows")]
 struct GeneralList {
     icon_lang: SafeTexture,
+
     lang_btn: ChooseButton,
     cache_btn: DRectButton,
     windows_fullscreen_btn: DRectButton,
@@ -289,7 +290,9 @@ struct GeneralList {
 #[cfg(not(target_os = "windows"))]
 struct GeneralList {
     icon_lang: SafeTexture,
+
     lang_btn: ChooseButton,
+    cache_btn: DRectButton,
     offline_btn: DRectButton,
     server_status_btn: DRectButton,
     mp_btn: DRectButton,
@@ -298,6 +301,9 @@ struct GeneralList {
     insecure_btn: DRectButton,
     enable_anys_btn: DRectButton,
     anys_gateway_btn: DRectButton,
+
+    cache_size: Option<u64>,
+    cache_task: Option<Task<Result<u64>>>,
 }
 
 impl GeneralList {
