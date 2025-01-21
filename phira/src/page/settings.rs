@@ -264,12 +264,26 @@ fn right_rect(w: f32) -> Rect {
     Rect::new(w - 0.3, (ITEM_HEIGHT - rh) / 2., INTERACT_WIDTH, rh)
 }
 
+#[cfg(target_os = "windows")]
 struct GeneralList {
     icon_lang: SafeTexture,
-
     lang_btn: ChooseButton,
     windows_fullscreen_btn: DRectButton,
     windows_multitouch_btn: DRectButton,
+    offline_btn: DRectButton,
+    server_status_btn: DRectButton,
+    mp_btn: DRectButton,
+    mp_addr_btn: DRectButton,
+    lowq_btn: DRectButton,
+    insecure_btn: DRectButton,
+    enable_anys_btn: DRectButton,
+    anys_gateway_btn: DRectButton,
+}
+
+#[cfg(not(target_os = "windows"))]
+struct GeneralList {
+    icon_lang: SafeTexture,
+    lang_btn: ChooseButton,
     offline_btn: DRectButton,
     server_status_btn: DRectButton,
     mp_btn: DRectButton,
