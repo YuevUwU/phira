@@ -285,10 +285,7 @@ async fn the_main() -> Result<()> {
         }
 
         #[cfg(target_os = "windows")]
-        {
-            macroquad::window::set_fullscreen(get_data().config.windows_fullscreen_mode);
-            macroquad::window::set_multitouch(get_data().config.windows_multitouch_mode);
-        }
+        macroquad::window::set_fullscreen(get_data().config.windows_fullscreen_mode);
 
         next_frame().await;
     }

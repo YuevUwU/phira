@@ -796,6 +796,7 @@ impl Scene for GameScene {
         let time = tm.now() as f32;
         let time = match self.state {
             State::Starting => {
+                set_multitouch(self.res.config.windows_multitouch_mode, true);
                 if time >= Self::BEFORE_TIME {
                     self.res.alpha = 1.;
                     self.state = State::BeforeMusic;
@@ -837,6 +838,7 @@ impl Scene for GameScene {
                 time
             }
             State::Ending => {
+                set_multitouch(self.res.config.windows_multitouch_mode, false);
                 let t = time - self.res.track_length - WAIT_TIME;
                 if t >= AFTER_TIME + 0.3 {
                     let mut record_data = None;
@@ -1102,6 +1104,7 @@ impl Scene for GameScene {
 
     fn next_scene(&mut self, tm: &mut TimeManager) -> NextScene {
         if self.should_exit {
+            set_multitouch(self.res.config.windows_multitouch_mode, false);
             if tm.paused() {
                 tm.resume();
             }
