@@ -274,10 +274,14 @@ pub struct Judge {
 }
 
 static SUBSCRIBER_ID: Lazy<usize> = Lazy::new(register_input_subscriber);
+
+#[cfg(target_os = "windows")]
 thread_local! {
-    #[cfg(target_os = "windows")]
     static TOUCHES: RefCell<(HashMap<u64, Touch>, i32, u32, Vec<Touch>)> = RefCell::default();
-    #[cfg(not(target_os = "windows"))]
+}
+
+#[cfg(not(target_os = "windows"))]
+thread_local! {
     static TOUCHES: RefCell<(Vec<Touch>, i32, u32)> = RefCell::default();
 }
 
@@ -1016,7 +1020,10 @@ impl Judge {
     }
 }
 
+#[cfg(target_os = "windows")]
 struct Handler(HashMap<u64, Touch>, i32, u32, Vec<Touch>);
+#[cfg(not(target_os = "windows"))]
+struct Handler(Vec<Touch>, i32, u32);
 impl Handler {
     fn finalize(&mut self) {
         #[cfg(target_os = "windows")]
