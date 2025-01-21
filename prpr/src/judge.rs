@@ -444,7 +444,7 @@ impl Judge {
                     .cloned()
                     .collect(),
                 false => {
-                    let mut touches: Vec<Touch> = touches();
+                    let mut touches: Vec<Touch> = Vec::new();
                     let btn = MouseButton::Left;
                     let id = button_to_id(btn);
                     if is_mouse_button_pressed(btn) {
