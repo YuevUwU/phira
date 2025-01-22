@@ -545,6 +545,8 @@ impl GameScene {
                         let now = tm.now();
                         tm.speed = res.config.speed as _;
                         tm.resume();
+                        #[cfg(target_os = "windows")]
+                        set_multitouch(res.config.windows_multitouch_mode, true);
                         tm.seek_to(now - 3.);
                         self.pause_rewind = Some(tm.now() - 0.2);
                     }
@@ -675,7 +677,11 @@ impl GameScene {
         }
         if self.res.config.touch_debug {
             for touch in Judge::get_touches() {
-                ui.fill_circle(touch.position.x, touch.position.y, 0.04, Color { a: 0.4, ..RED });
+                let color = match touch.id < u64::MAX - 3 {
+                    true => Color { a: 0.4, ..RED },
+                    false => Color { a: 0.4, ..YELLOW },
+                };
+                ui.fill_circle(touch.position.x, touch.position.y, 0.04, color);
             }
         }
         for pos in &self.touch_points {
@@ -919,12 +925,16 @@ impl Scene for GameScene {
                 if matches!(self.state, State::Playing) {
                     self.music.play()?;
                     tm.resume();
+                    #[cfg(target_os = "windows")]
+                    set_multitouch(res.config.windows_multitouch_mode, true);
                 }
             } else if matches!(self.state, State::Playing | State::BeforeMusic) {
                 if !self.music.paused() {
                     self.music.pause()?;
                 }
                 tm.pause();
+                #[cfg(target_os = "windows")]
+                set_multitouch(res.config.windows_multitouch_mode, false);
             }
         }
         if Self::interactive(res, &self.state) {
