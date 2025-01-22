@@ -791,6 +791,8 @@ impl Scene for GameScene {
             tm.update(self.music.position() as f64);
         }
         if self.mode == GameMode::Exercise && tm.now() > self.exercise_range.end as f64 && !tm.paused() {
+            #[cfg(target_os = "windows")]
+            set_multitouch(self.res.config.windows_multitouch_mode, false);
             let state = self.state.clone();
             reset!(self, self.res, tm);
             self.state = state;
@@ -803,7 +805,7 @@ impl Scene for GameScene {
         let time = match self.state {
             State::Starting => {
                 #[cfg(target_os = "windows")]
-                set_multitouch(self.res.config.windows_multitouch_mode, true);
+                set_multitouch(self.res.config.windows_multitouch_mode, self.mode != GameMode::Exercise);
                 if time >= Self::BEFORE_TIME {
                     self.res.alpha = 1.;
                     self.state = State::BeforeMusic;
