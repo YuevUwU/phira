@@ -107,7 +107,7 @@ if ! $SKIP_DEP_CHECK; then
                 source "$HOME/.cargo/env"
 
                 echo -e "${GREEN}Installing Rust nightly...${NC}"
-                rustup toolchain install nightly
+                rustup install nightly
 
                 echo -e "${GREEN}Rust has been installed${NC}"
                 echo -e "${YELLOW}If you get error, please restart terminal and re-run this script.${NC}"

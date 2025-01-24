@@ -302,6 +302,9 @@ rust_install() {
 }
 
 check_nightly() {
+    # shellcheck disable=SC1091
+    . "$HOME/.cargo/env"
+    
     if ! rustup toolchain list | grep -q 'nightly'; then
         if [[ "$NO_CONFIRMATION" = true ]] || confirm_action "Rust nightly is not installed. Do you want to install Rust nightly now?"; then
             rust_nightly_install
@@ -312,19 +315,16 @@ check_nightly() {
 }
 
 rust_nightly_install() {
-    log "Installing Rust nightly..."
-
-    TEMPDIR=$(mktemp -d)
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$TEMPDIR/rustup.sh" || error "Failed to download Rust installer."
-    
-    if [[ "$NO_CONFIRMATION" = true ]]; then
-        sh "$TEMPDIR/rustup.sh" -y -P nightly || error "Rust nightly installation failed."
-    else
-        sh "$TEMPDIR/rustup.sh" -P nightly || error "Rust nightly installation failed."
-    fi
-
     # shellcheck disable=SC1091
     . "$HOME/.cargo/env"
+
+    log "Installing Rust nightly..."
+
+    if [[ "$NO_CONFIRMATION" = true ]]; then
+        rustup install nightly || error "Rust nightly installation failed."
+    else
+        rustup install nightly || error "Rust nightly installation failed."
+    fi
 
     log "Rust nightly has been installed."
     log "If you get an error, please restart the terminal and re-run this script."
