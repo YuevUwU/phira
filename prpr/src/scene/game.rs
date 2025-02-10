@@ -548,8 +548,6 @@ impl GameScene {
                         let now = tm.now();
                         tm.speed = res.config.speed as _;
                         tm.resume();
-                        #[cfg(target_os = "windows")]
-                        set_multitouch(res.config.windows_multitouch_mode, true);
                         tm.seek_to(now - 3.);
                         self.pause_rewind = Some(tm.now() - 0.2);
                     }
@@ -680,11 +678,7 @@ impl GameScene {
         }
         if self.res.config.touch_debug {
             for touch in Judge::get_touches() {
-                let color = match touch.id < u64::MAX - 3 {
-                    true => Color { a: 0.4, ..RED },
-                    false => Color { a: 0.4, ..YELLOW },
-                };
-                ui.fill_circle(touch.position.x, touch.position.y, 0.04, color);
+                ui.fill_circle(touch.position.x, touch.position.y, 0.04, Color { a: 0.4, ..RED });
             }
         }
         for pos in &self.touch_points {
@@ -794,8 +788,6 @@ impl Scene for GameScene {
             tm.update(self.music.position() as f64);
         }
         if self.mode == GameMode::Exercise && tm.now() > self.exercise_range.end as f64 && !tm.paused() {
-            #[cfg(target_os = "windows")]
-            set_multitouch(self.res.config.windows_multitouch_mode, false);
             let state = self.state.clone();
             reset!(self, self.res, tm);
             self.state = state;
@@ -807,8 +799,6 @@ impl Scene for GameScene {
         let time = tm.now() as f32;
         let time = match self.state {
             State::Starting => {
-                #[cfg(target_os = "windows")]
-                set_multitouch(self.res.config.windows_multitouch_mode, self.mode != GameMode::Exercise);
                 if time >= Self::BEFORE_TIME {
                     self.res.alpha = 1.;
                     self.state = State::BeforeMusic;
@@ -850,8 +840,6 @@ impl Scene for GameScene {
                 time
             }
             State::Ending => {
-                #[cfg(target_os = "windows")]
-                set_multitouch(self.res.config.windows_multitouch_mode, false);
                 let t = time - self.res.track_length - WAIT_TIME;
                 if t >= AFTER_TIME + 0.3 {
                     let mut record_data = None;
@@ -930,16 +918,12 @@ impl Scene for GameScene {
                 if matches!(self.state, State::Playing) {
                     self.music.play()?;
                     tm.resume();
-                    #[cfg(target_os = "windows")]
-                    set_multitouch(res.config.windows_multitouch_mode, true);
                 }
             } else if matches!(self.state, State::Playing | State::BeforeMusic) {
                 if !self.music.paused() {
                     self.music.pause()?;
                 }
                 tm.pause();
-                #[cfg(target_os = "windows")]
-                set_multitouch(res.config.windows_multitouch_mode, false);
             }
         }
         if Self::interactive(res, &self.state) {
@@ -1121,8 +1105,6 @@ impl Scene for GameScene {
 
     fn next_scene(&mut self, tm: &mut TimeManager) -> NextScene {
         if self.should_exit {
-            #[cfg(target_os = "windows")]
-            set_multitouch(self.res.config.windows_multitouch_mode, false);
             if tm.paused() {
                 tm.resume();
             }

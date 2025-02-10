@@ -267,32 +267,14 @@ fn right_rect(w: f32) -> Rect {
     Rect::new(w - 0.3, (ITEM_HEIGHT - rh) / 2., INTERACT_WIDTH, rh)
 }
 
-#[cfg(target_os = "windows")]
 struct GeneralList {
     icon_lang: SafeTexture,
 
     lang_btn: ChooseButton,
-    cache_btn: DRectButton,
-    windows_fullscreen_btn: DRectButton,
-    windows_multitouch_btn: DRectButton,
-    offline_btn: DRectButton,
-    server_status_btn: DRectButton,
-    mp_btn: DRectButton,
-    mp_addr_btn: DRectButton,
-    lowq_btn: DRectButton,
-    insecure_btn: DRectButton,
-    enable_anys_btn: DRectButton,
-    anys_gateway_btn: DRectButton,
 
-    cache_size: Option<u64>,
-    cache_task: Option<Task<Result<u64>>>,
-}
+    #[cfg(target_os = "windows")]
+    fullscreen_btn: DRectButton,
 
-#[cfg(not(target_os = "windows"))]
-struct GeneralList {
-    icon_lang: SafeTexture,
-
-    lang_btn: ChooseButton,
     cache_btn: DRectButton,
     offline_btn: DRectButton,
     server_status_btn: DRectButton,
@@ -322,11 +304,11 @@ impl GeneralList {
                         .and_then(|ident| LANG_IDENTS.iter().position(|it| *it == ident))
                         .unwrap_or_default(),
                 ),
+
+            #[cfg(target_os = "windows")]
+            fullscreen_btn: DRectButton::new(),
+
             cache_btn: DRectButton::new(),
-            #[cfg(target_os = "windows")]
-            windows_fullscreen_btn: DRectButton::new(),
-            #[cfg(target_os = "windows")]
-            windows_multitouch_btn: DRectButton::new(),
             offline_btn: DRectButton::new(),
             server_status_btn: DRectButton::new(),
             mp_btn: DRectButton::new(),
@@ -379,21 +361,18 @@ impl GeneralList {
         if self.lang_btn.touch(touch, t) {
             return Ok(Some(false));
         }
+
+        #[cfg(target_os = "windows")]
+        if self.fullscreen_btn.touch(touch, t) {
+            config.fullscreen_mode ^= true;
+            return Ok(Some(true));
+        }
+
         if self.cache_btn.touch(touch, t) {
             fs::remove_dir_all(dir::cache()?)?;
             self.update_cache_size()?;
             show_message(tl!("item-cache-cleared")).ok();
             return Ok(Some(false));
-        }
-        #[cfg(target_os = "windows")]
-        if self.windows_fullscreen_btn.touch(touch, t) {
-            config.windows_fullscreen_mode ^= true;
-            return Ok(Some(true));
-        }
-        #[cfg(target_os = "windows")]
-        if self.windows_multitouch_btn.touch(touch, t) {
-            config.windows_multitouch_mode ^= true;
-            return Ok(Some(true));
         }
         if self.offline_btn.touch(touch, t) {
             config.offline_mode ^= true;
@@ -489,16 +468,13 @@ impl GeneralList {
             ui.fill_rect(r, (*self.icon_lang, r));
             self.lang_btn.render(ui, rr, t);
         }
+
         #[cfg(target_os = "windows")]
         item! {
             render_title(ui, tl!("item-fullscreen"), Some(tl!("item-fullscreen-sub")));
-            render_switch(ui, rr, t, &mut self.windows_fullscreen_btn, config.windows_fullscreen_mode);
+            render_switch(ui, rr, t, &mut self.fullscreen_btn, config.fullscreen_mode);
         }
-        #[cfg(target_os = "windows")]
-        item! {
-            render_title(ui, tl!("item-multitouch"), Some(tl!("item-multitouch-sub")));
-            render_switch(ui, rr, t, &mut self.windows_multitouch_btn, config.windows_multitouch_mode);
-        }
+
         item! {
             render_title(ui, tl!("item-offline"), Some(tl!("item-offline-sub")));
             render_switch(ui, rr, t, &mut self.offline_btn, config.offline_mode);

@@ -38,10 +38,7 @@ pub struct Config {
     pub mp_enabled: bool,
     pub mp_address: String,
     pub offline_mode: bool,
-    #[cfg(target_os = "windows")]
-    pub windows_fullscreen_mode: bool,
-    #[cfg(target_os = "windows")]
-    pub windows_multitouch_mode: bool,
+    pub fullscreen_mode: bool,
     pub offset: f32,
     pub particle: bool,
     pub player_name: String,
@@ -78,10 +75,7 @@ impl Default for Config {
             mp_enabled: false,
             note_scale: 1.0,
             offline_mode: false,
-            #[cfg(target_os = "windows")]
-            windows_fullscreen_mode: false,
-            #[cfg(target_os = "windows")]
-            windows_multitouch_mode: false,
+            fullscreen_mode: false,
             offset: 0.,
             particle: true,
             player_name: "Mivik".to_string(),
