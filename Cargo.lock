@@ -1766,7 +1766,7 @@ dependencies = [
 [[package]]
 name = "macroquad"
 version = "0.3.25"
-source = "git+https://github.com/fhscey/prpr-macroquad#d596a68ce193e0f191a61a0413f7fa5b0aa1cccd"
+source = "git+https://github.com/fhscey/prpr-macroquad#b79bad36314acb99c59f8dd3b86de98f54bd48f7"
 dependencies = [
  "bumpalo",
  "fontdue",
@@ -1780,7 +1780,7 @@ dependencies = [
 [[package]]
 name = "macroquad_macro"
 version = "0.1.7"
-source = "git+https://github.com/fhscey/prpr-macroquad#d596a68ce193e0f191a61a0413f7fa5b0aa1cccd"
+source = "git+https://github.com/fhscey/prpr-macroquad#b79bad36314acb99c59f8dd3b86de98f54bd48f7"
 
 [[package]]
 name = "malloc_buf"
@@ -1854,7 +1854,7 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 [[package]]
 name = "miniquad"
 version = "0.3.15"
-source = "git+https://github.com/fhscey/prpr-miniquad#a352bf2f9b287e190c59c0ac9b1eb8eb9b675e65"
+source = "git+https://github.com/fhscey/prpr-miniquad#ca77e09c36fefdb7073459acb288f1da5190d5a3"
 dependencies = [
  "libc",
  "ndk-context",
@@ -2426,7 +2426,7 @@ dependencies = [
 
 [[package]]
 name = "phira"
-version = "0.6.7+sha.c132562"
+version = "0.6.7+sha.21f6301"
 dependencies = [
  "anyhow",
  "arc-swap",
@@ -2481,7 +2481,7 @@ dependencies = [
 
 [[package]]
 name = "phira-main"
-version = "0.6.7+sha.c132562"
+version = "0.6.7+sha.21f6301"
 dependencies = [
  "phira",
 ]
@@ -2656,7 +2656,7 @@ dependencies = [
 
 [[package]]
 name = "prpr"
-version = "0.6.7+sha.c132562"
+version = "0.6.7+sha.21f6301"
 dependencies = [
  "ahash",
  "anyhow",

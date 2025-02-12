@@ -11,7 +11,7 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.6.7+sha.c132562"
+version = "0.6.7+sha.21f6301"
 edition = "2021"
 license = "GPL-3.0-only"
 
