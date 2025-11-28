@@ -2,6 +2,7 @@ name: Build Android Phira
 
 on:
   workflow_dispatch:
+  push:
 
 
 env:
