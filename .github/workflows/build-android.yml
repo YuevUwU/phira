@@ -50,7 +50,6 @@ jobs:
     - name: Install Rust Toolchains
       uses: actions-rs/toolchain@v1.0.6
       with:
-        toolchain: stable
         target: aarch64-linux-android
     
     - name: Build for Android
