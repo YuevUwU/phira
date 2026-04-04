@@ -380,7 +380,7 @@ impl GameScene {
             let score_right = 1. - margin;
             let score = format!("{:07}", self.judge.score());
             self.chart
-                .with_element(ui, res, UIElement::Score, Some((score_right , score_top)), Some((score_right, score_top)), |ui, c| {
+                .with_element(ui, res, UIElement::Score, Some((score_right, score_top)), Some((score_right, score_top)), |ui, c| {
                     ui.text(&score)
                         .pos(score_right, score_top)
                         .anchor(1., 0.)
@@ -397,13 +397,19 @@ impl GameScene {
                     }
                 });
 
-            self.chart
-                .with_element(ui, res, UIElement::Pause, Some((pause_center.x - pause_w * 1.5, pause_center.y - pause_h / 2.)), Some((pause_center.x - pause_w * 1.5, pause_center.y - pause_h / 2.)), |ui, c| {
+            self.chart.with_element(
+                ui,
+                res,
+                UIElement::Pause,
+                Some((pause_center.x - pause_w * 1.5, pause_center.y - pause_h / 2.)),
+                Some((pause_center.x - pause_w * 1.5, pause_center.y - pause_h / 2.)),
+                |ui, c| {
                     let mut r = Rect::new(pause_center.x - pause_w * 1.5, pause_center.y - pause_h / 2., pause_w, pause_h);
                     ui.fill_rect(r, c);
                     r.x += pause_w * 2.;
                     ui.fill_rect(r, c);
-                });
+                },
+            );
             if self.judge.combo() >= 3 {
                 let combo = self.judge.combo().to_string();
                 let ct = ui.text(&combo).size(1.0).measure().center();
@@ -435,15 +441,16 @@ impl GameScene {
             ui.text("").draw_using(&PGR_FONT);
             let lf = -1. + margin;
             let bt = -top - eps * 2.8 + (1. - p) * 0.4;
-            self.chart.with_element(ui, res, UIElement::Name, Some((lf, bt)), Some((lf, bt)), |ui, c| {
-                ui.text(&res.info.name)
-                    .pos(lf, bt)
-                    .anchor(0., 1.)
-                    .size(0.5)
-                    .color(c)
-                    .max_width(0.8)
-                    .draw();
-            });
+            self.chart
+                .with_element(ui, res, UIElement::Name, Some((lf, bt)), Some((lf, bt)), |ui, c| {
+                    ui.text(&res.info.name)
+                        .pos(lf, bt)
+                        .anchor(0., 1.)
+                        .size(0.5)
+                        .color(c)
+                        .max_width(0.8)
+                        .draw();
+                });
 
             self.chart
                 .with_element(ui, res, UIElement::Level, Some((-lf, bt)), Some((-lf, bt)), |ui, c| {
@@ -453,10 +460,11 @@ impl GameScene {
             let hw = 0.003;
             let height = eps * 1.0;
             let dest = (2. * res.time / res.track_length).max(0.).min(2.);
-            self.chart.with_element(ui, res, UIElement::Bar, Some((-1., top + height / 2.)), Some((-1., top + height / 2.)), |ui, color| {
-                ui.fill_rect(Rect::new(-1., top, dest, height), semi_white(0.6));
-                ui.fill_rect(Rect::new(-1. + dest - hw, top, hw * 2., height), WHITE);
-            });
+            self.chart
+                .with_element(ui, res, UIElement::Bar, Some((-1., top + height / 2.)), Some((-1., top + height / 2.)), |ui, color| {
+                    ui.fill_rect(Rect::new(-1., top, dest, height), semi_white(0.6));
+                    ui.fill_rect(Rect::new(-1. + dest - hw, top, hw * 2., height), WHITE);
+                });
         });
         Ok(())
     }
@@ -536,7 +544,9 @@ impl GameScene {
                         reset!(self, res, tm);
                     }
                     Some(1) => {
-                        if self.mode == GameMode::Exercise && (tm.now() > self.exercise_range.end as f64 || tm.now() < self.exercise_range.start as f64) {
+                        if self.mode == GameMode::Exercise
+                            && (tm.now() > self.exercise_range.end as f64 || tm.now() < self.exercise_range.start as f64)
+                        {
                             tm.seek_to(self.exercise_range.start as f64);
                             self.music.seek_to(self.exercise_range.start)?;
                             pos = self.exercise_range.start;
@@ -821,7 +831,8 @@ impl Scene for GameScene {
                     tm.now() as f32
                 } else {
                     #[cfg(target_os = "windows")]
-                    { // wtf bro. why must particles exist on Windows?
+                    {
+                        // wtf bro. why must particles exist on Windows?
                         let emitter_config = self.res.emitter.emitter.config.clone();
                         let emitter_square_config = self.res.emitter.emitter_square.config.clone();
                         self.res.emitter.emitter.config.size = 0.0;
