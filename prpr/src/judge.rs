@@ -672,13 +672,7 @@ impl Judge {
             {
                 let note = &mut chart.lines[line_id].notes[id as usize];
                 let dt = (t - note.time).abs() / spd;
-                if dt
-                    <= if matches!(note.kind, NoteKind::Click) {
-                        limit_bad
-                    } else {
-                        limit_good
-                    }
-                {
+                if dt <= if matches!(note.kind, NoteKind::Click) { limit_bad } else { limit_good } {
                     match note.kind {
                         NoteKind::Click => {
                             note.judge = JudgeStatus::Judged;

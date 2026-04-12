@@ -562,7 +562,7 @@ impl Scene for EndingScene {
                 (Mods::RAINBOW, 4),
                 (Mods::AUTOPLAY, 5),
                 (Mods::NO_SHADER, 6),
-                (Mods::STRICT, 7)
+                (Mods::STRICT, 7),
             ]
             .into_iter()
             .filter(|(m, _)| self.mods.contains(*m))
