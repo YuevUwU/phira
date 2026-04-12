@@ -20,6 +20,7 @@ bitflags! {
         const NO_SHADER = 0x0040;
         const INSTANT_DEATH_AP = 0x0080;
         const INSTANT_DEATH_FC = 0x0100;
+        const STRICT = 0x0200;
 
         const UNRATED = Self::AUTOPLAY.bits() | Self::NO_SHADER.bits();
     }
@@ -155,5 +156,10 @@ impl Config {
     #[inline]
     pub fn flip_x(&self) -> bool {
         self.has_mod(Mods::FLIP_X)
+    }
+
+    #[inline]
+    pub fn strict(&self) -> bool {
+        self.has_mod(Mods::STRICT)
     }
 }

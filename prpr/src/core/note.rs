@@ -1,7 +1,8 @@
 use super::{chart::ChartSettings, BpmList, CtrlObject, JudgeLine, Matrix, Object, Point, Resource};
+use crate::judge::LIMIT_BAD;
 pub use crate::{
     config::Mods,
-    judge::{HitSound, JudgeStatus, LIMIT_BAD},
+    judge::{HitSound, JudgeStatus},
     parse::RPE_HEIGHT,
 };
 use macroquad::prelude::*;
@@ -192,6 +193,7 @@ impl Note {
     }
 
     pub fn render(&self, res: &mut Resource, config: &mut RenderConfig, bpm_list: &mut BpmList) {
+        let limit_bad = if res.config.strict() { LIMIT_BAD * 0.5 } else { LIMIT_BAD };
         if matches!(self.judge, JudgeStatus::Judged) && !matches!(self.kind, NoteKind::Hold { .. }) {
             return;
         }
@@ -246,9 +248,9 @@ impl Note {
             &res.res_pack.note_style
         };
         let mod_alpha = if res.config.has_mod(Mods::FADE_OUT) {
-            ((self.time - res.time - LIMIT_BAD) / LIMIT_BAD).clamp(0., 1.)
+            ((self.time - res.time - limit_bad) / limit_bad).clamp(0., 1.)
         } else if res.config.has_mod(Mods::FADE_IN) {
-            (1. - (self.time - res.time - LIMIT_BAD) / LIMIT_BAD).clamp(0., 1.)
+            (1. - (self.time - res.time - limit_bad) / limit_bad).clamp(0., 1.)
         } else {
             1.
         };

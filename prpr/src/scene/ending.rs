@@ -33,7 +33,7 @@ pub struct EndingScene {
     icons: [SafeTexture; 8],
     icon_retry: SafeTexture,
     icon_proceed: SafeTexture,
-    mod_icons: [SafeTexture; 7],
+    mod_icons: [SafeTexture; 8],
     target: Option<RenderTarget>,
     audio: AudioManager,
     bgm: Music,
@@ -74,7 +74,7 @@ impl EndingScene {
         icons: [SafeTexture; 8],
         icon_retry: SafeTexture,
         icon_proceed: SafeTexture,
-        mod_icons: [SafeTexture; 7],
+        mod_icons: [SafeTexture; 8],
         info: ChartInfo,
         result: PlayResult,
         config: &Config,
@@ -562,6 +562,7 @@ impl Scene for EndingScene {
                 (Mods::RAINBOW, 4),
                 (Mods::AUTOPLAY, 5),
                 (Mods::NO_SHADER, 6),
+                (Mods::STRICT, 7),
             ]
             .into_iter()
             .filter(|(m, _)| self.mods.contains(*m))
