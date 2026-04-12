@@ -110,6 +110,8 @@ mods-instant-death-fc = 突然死亡 (FC)
 mods-instant-death-fc-sub = 連擊中斷立即失敗
 mods-no-shader = 無著色器
 mods-no-shader-sub = 禁用著色器特效。*啟用此 Mod 後無法上傳成績*
+mods-strict-mode = 嚴判模式
+mods-strict-mode-sub = *(非官方)* 判定时間縮短為原來的一半
 
 rate-failed = 評分失敗
 rate-done = 評分成功

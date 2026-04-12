@@ -422,7 +422,7 @@ pub struct Resource {
     pub background: SafeTexture,
     pub illustration: SafeTexture,
     pub icons: [SafeTexture; 8],
-    pub mod_icons: [SafeTexture; 7],
+    pub mod_icons: [SafeTexture; 8],
     pub res_pack: ResourcePack,
     pub player: SafeTexture,
     pub icon_back: SafeTexture,
@@ -472,7 +472,7 @@ impl Resource {
             "rank/phi.png"
         ])
     }
-    pub async fn load_mod_icons() -> Result<[SafeTexture; 7]> {
+    pub async fn load_mod_icons() -> Result<[SafeTexture; 8]> {
         // FLIP_X, FADE_OUT, FADE_IN, NIGHTCORE, RAINBOW, AUTOPLAY, NO_SHADER
         Ok(loads![
             "mod/flip_x.png",
@@ -481,7 +481,8 @@ impl Resource {
             "mod/nightcore.png",
             "mod/rainbow.png",
             "mod/autoplay.png",
-            "mod/no-shader.png"
+            "mod/no-shader.png",
+            "mod/strict.png"
         ])
     }
 
