@@ -6,7 +6,7 @@ use prpr::{
     ext::{create_audio_manger, semi_black, semi_white, SafeTexture, ScaleType},
     fs::FileSystem,
     info::ChartInfo,
-    scene::{BasicPlayer, GameMode, LoadingScene, NextScene, Scene, UpdateFn, UploadFn},
+    scene::{BasicPlayer, GameMode, LoadingScene, NextScene, SaveFn, Scene, UpdateFn, UploadFn},
     time::TimeManager,
     ui::LoadingParams,
 };
@@ -33,7 +33,7 @@ pub struct UnlockScene {
     render_target: Option<RenderTarget>,
     video: Video,
     bgm: Option<Bgm>,
-    music_length: f32,
+    music_length: f64,
 
     background: SafeTexture,
 
@@ -41,6 +41,7 @@ pub struct UnlockScene {
 }
 
 impl UnlockScene {
+    #[allow(clippy::too_many_arguments)]
     pub async fn new(
         mode: GameMode,
         info: ChartInfo,
@@ -49,6 +50,7 @@ impl UnlockScene {
         player: Option<BasicPlayer>,
         upload_fn: Option<UploadFn>,
         update_fn: Option<UpdateFn>,
+        save_fn: Option<SaveFn>,
         preloaded: Option<(prpr::ext::SafeTexture, prpr::ext::SafeTexture, Color)>,
     ) -> Result<UnlockScene> {
         let bytes = fs
@@ -74,7 +76,7 @@ impl UnlockScene {
         };
 
         let (_, background, _) = preloaded.clone().unwrap_or(LoadingScene::load(&mut *fs, &info.illustration).await?);
-        let loading_scene = Box::new(LoadingScene::new(mode, info, config, fs, player, upload_fn, update_fn, preloaded).await?);
+        let loading_scene = Box::new(LoadingScene::new(mode, info, config, fs, player, upload_fn, update_fn, save_fn, preloaded).await?);
 
         Ok(UnlockScene {
             loading_scene,
@@ -131,7 +133,7 @@ impl Scene for UnlockScene {
             }
         }
 
-        let t = tm.now() as f32;
+        let t = tm.now();
         match self.state {
             State::Before => {
                 if t > 0.5 {
@@ -144,7 +146,7 @@ impl Scene for UnlockScene {
                 }
             }
             State::Playing => {
-                if self.video.ended && t > self.music_length {
+                if t > self.video.duration && t > self.music_length {
                     self.state = State::Blanking;
                     tm.reset();
                 } else {
@@ -156,7 +158,7 @@ impl Scene for UnlockScene {
             }
             State::Blanking => {
                 if t > 1. && self.game_scene.is_some() {
-                    self.next_scene = self.game_scene.take().map(|it| NextScene::Replace(it));
+                    self.next_scene = self.game_scene.take().map(NextScene::Replace);
                 } else {
                     self.state = State::Loading;
                     tm.reset();
@@ -172,7 +174,7 @@ impl Scene for UnlockScene {
                     if self.game_scene.is_none() {
                         bail!("UnlockScene exited at State::Blank3 without GameScene");
                     }
-                    self.next_scene = self.game_scene.take().map(|it| NextScene::Replace(it));
+                    self.next_scene = self.game_scene.take().map(NextScene::Replace);
                 }
             }
         }
@@ -183,7 +185,7 @@ impl Scene for UnlockScene {
     fn render(&mut self, tm: &mut TimeManager, ui: &mut prpr::ui::Ui) -> Result<()> {
         let mut cam = ui.camera();
         let asp = -cam.zoom.y;
-        let t = tm.now() as f32;
+        let t = tm.now();
         cam.render_target = self.render_target;
         set_camera(&cam);
         clear_background(BLACK);
@@ -191,7 +193,7 @@ impl Scene for UnlockScene {
         match self.state {
             State::Playing => {
                 if t > 0.05 {
-                    self.video.render(t, asp);
+                    self.video.render(t, asp, WHITE);
                 }
             }
             State::Loading => {
@@ -200,7 +202,7 @@ impl Scene for UnlockScene {
                 ui.loading(
                     1. - pad,
                     top - pad,
-                    t,
+                    t as f32,
                     WHITE,
                     LoadingParams {
                         width: 0.01,
@@ -213,11 +215,11 @@ impl Scene for UnlockScene {
                 let top = 1. / asp;
                 if t < 0.5 {
                     let pad = 0.07;
-                    let alpha = if t < 0.5 { 1. - t / 0.5 } else { 0. }; // TODO: more smoothly
+                    let alpha = if t < 0.5 { 1. - t as f32 / 0.5 } else { 0. }; // TODO: more smoothly
                     ui.loading(
                         1. - pad,
                         top - pad,
-                        t,
+                        t as f32,
                         semi_white(alpha),
                         LoadingParams {
                             width: 0.01,
@@ -226,7 +228,7 @@ impl Scene for UnlockScene {
                         },
                     );
                 } else {
-                    let alpha = if t < 0.5 { t / 0.5 * 0.3 } else { 0.3 };
+                    let alpha = if t < 0.5 { t as f32 / 0.5 * 0.3 } else { 0.3 };
                     let r = ui.screen_rect();
                     ui.fill_rect(r, (*self.background, r));
                     ui.fill_rect(r, semi_black(alpha));

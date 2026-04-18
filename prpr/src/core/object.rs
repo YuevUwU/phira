@@ -22,7 +22,7 @@ impl Object {
             && self.translation.1.is_default()
     }
 
-    pub fn set_time(&mut self, time: f32) {
+    pub fn set_time(&mut self, time: f64) {
         self.alpha.set_time(time);
         self.scale.0.set_time(time);
         self.scale.1.set_time(time);
@@ -56,6 +56,12 @@ impl Object {
         tr
     }
 
+    pub fn new_rotation_wrt_point(rot: Rotation2<f32>, pt: Vector) -> Matrix {
+        let translation_back = Matrix::new_translation(&pt);
+        let translation_to = Matrix::new_translation(&-pt);
+        translation_back * rot.to_homogeneous() * translation_to
+    }
+
     #[inline]
     pub fn now_alpha(&self) -> f32 {
         self.alpha.now_opt().unwrap_or(1.0).max(0.)
@@ -83,7 +89,7 @@ pub struct CtrlObject {
 }
 
 impl CtrlObject {
-    pub fn set_height(&mut self, height: f32) {
+    pub fn set_height(&mut self, height: f64) {
         self.alpha.set_time(height);
         self.size.set_time(height);
         self.pos.set_time(height);

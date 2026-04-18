@@ -1,3 +1,5 @@
+#![allow(clippy::type_complexity)]
+
 use std::ffi::c_void;
 
 pub const AV_CH_LAYOUT_STEREO: u64 = 3;
@@ -5,6 +7,8 @@ pub const AV_CH_LAYOUT_STEREO: u64 = 3;
 pub const AV_SAMPLE_FMT_FLT: AVSampleFormat = 3;
 
 pub const AV_ROUND_UP: AVRounding = 0;
+
+pub const AVSEEK_FLAG_BACKWARD: i32 = 1;
 
 #[link(name = "avformat", kind = "static")]
 extern "C" {
@@ -18,6 +22,12 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
     pub fn avformat_find_stream_info(ic: *mut AVFormatContext, options: *mut *mut c_void) -> ::std::os::raw::c_int;
     pub fn av_read_frame(s: *mut AVFormatContext, pkt: *mut AVPacket) -> ::std::os::raw::c_int;
+    pub fn av_seek_frame(
+        s: *mut AVFormatContext,
+        stream_index: ::std::os::raw::c_int,
+        timestamp: i64,
+        flags: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
 }
 
 #[link(name = "avutil", kind = "static")]
@@ -41,6 +51,7 @@ extern "C" {
     pub fn avcodec_send_packet(avctx: *mut AVCodecContext, avpkt: *const AVPacket) -> ::std::os::raw::c_int;
     pub fn avcodec_receive_frame(avctx: *mut AVCodecContext, frame: *mut AVFrame) -> ::std::os::raw::c_int;
     pub fn avcodec_default_get_format(s: *mut AVCodecContext, fmt: *const AVPixelFormat) -> AVPixelFormat;
+    pub fn avcodec_flush_buffers(avctx: *mut AVCodecContext);
 }
 
 #[link(name = "swscale", kind = "static")]
@@ -374,6 +385,7 @@ pub union AVChannelLayout__bindgen_ty_1 {
     pub map: *mut c_void,
 }
 
+#[allow(dead_code)]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct AVProbeData {

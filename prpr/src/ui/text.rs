@@ -12,7 +12,7 @@ use macroquad::{
     prelude::*,
 };
 use once_cell::sync::Lazy;
-use std::{borrow::Cow, cell::RefCell, collections::HashSet, thread::LocalKey};
+use std::{borrow::Cow, cell::RefCell, thread::LocalKey};
 use tracing::debug;
 
 #[must_use = "DrawText does nothing until you 'draw' it"]
@@ -105,7 +105,7 @@ impl<'a, 's, 'ui> DrawText<'a, 's, 'ui> {
         rect
     }
 
-    fn measure_inner<'this, 'c>(&mut self, text: &'c str, painter: &mut Option<&mut TextPainter>) -> (Section<'c>, (f32, f32, f32, f32)) {
+    fn measure_inner<'c>(&mut self, text: &'c str, painter: &mut Option<&mut TextPainter>) -> (Section<'c>, (f32, f32, f32, f32)) {
         use glyph_brush::ab_glyph;
         let vp = get_viewport();
         let scale = self.get_scale(vp.2);
@@ -118,7 +118,7 @@ impl<'a, 's, 'ui> DrawText<'a, 's, 'ui> {
             let mut last = 0;
             let mut last_contain = false;
             for (i, c) in text.char_indices() {
-                let contain = painter.valid_chars.contains(&c);
+                let contain = " \n\t".contains(c) || painter.brush.fonts()[0].glyph_id(c).0 != 0;
                 if last_contain != contain {
                     if last != i {
                         section = section.add_text(
@@ -175,6 +175,8 @@ impl<'a, 's, 'ui> DrawText<'a, 's, 'ui> {
             let index = glyphs.partition_point(|it| end(it) <= bounds.max.x - w);
             let st = if index == 0 { 0. } else { end(&glyphs[index - 1]) };
             let byte_index = if index == 0 { 0 } else { glyphs[index - 1].byte_index };
+            // Round to char boundary
+            let byte_index = text[..byte_index].char_indices().next_back().map_or(0, |(i, _)| i);
             return (
                 section.with_text(vec![
                     Text::new(&text[..byte_index]).with_scale(scale).with_color(self.color),
@@ -277,14 +279,10 @@ pub struct TextPainter {
     cache_texture: Texture2D,
     data_buffer: Vec<u8>,
     vertices_buffer: Vec<MyVertex>,
-
-    valid_chars: HashSet<char>,
 }
 
 impl TextPainter {
     pub fn new(font: FontArc, fallback: Option<FontArc>) -> Self {
-        let valid_chars = font.codepoint_ids().map(|it| it.1).chain(" \n\t".chars()).collect();
-
         let mut fonts = vec![font];
         if let Some(fallback) = fallback {
             fonts.push(fallback);
@@ -299,8 +297,6 @@ impl TextPainter {
             cache_texture,
             data_buffer: Vec::new(),
             vertices_buffer: Vec::new(),
-
-            valid_chars,
         }
     }
 

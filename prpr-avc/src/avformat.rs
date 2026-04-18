@@ -29,13 +29,17 @@ impl AVFormatContext {
     pub fn read_frame(&mut self, frame: &mut AVPacket) -> Result<bool> {
         unsafe {
             match handle(ffi::av_read_frame(self.0 .0, frame.0 .0)) {
-                Err(Error::EndOfFile) => return Ok(false),
+                Err(Error::EndOfFile) => Ok(false),
                 x => {
                     x?;
                     Ok(true)
                 }
             }
         }
+    }
+
+    pub fn seek_frame(&mut self, stream_index: i32, timestamp: i64, flags: i32) -> Result<()> {
+        unsafe { handle(ffi::av_seek_frame(self.0 .0, stream_index, timestamp, flags)) }
     }
 }
 

@@ -53,7 +53,6 @@ impl ResPackItem {
     }
 
     fn load(&mut self) {
-        if self.load_task.is_some() {}
         if let Some(loaded) = self.loaded.take() {
             self.load_task = Some(Box::pin(async move { Ok(loaded) }));
         } else {
@@ -119,9 +118,14 @@ impl ResPackPage {
                 }
             })
             .collect();
-        save_data()?;
 
-        let index = get_data().respack_id;
+        let respack_id = get_data().respack_id;
+        let index = respack_id.min(items.len().saturating_sub(1));
+        if index != respack_id {
+            data.respack_id = index;
+        }
+
+        save_data()?;
         items[index].load();
         let delete_btn = DRectButton::new().with_delta(-0.004).with_elevation(0.);
         Ok(Self {
@@ -286,7 +290,6 @@ impl Page for ResPackPage {
                 draw(r, *pack.note_style.drag, *pack.note_style_mh.drag);
                 r.y += sp;
                 draw(r, *pack.note_style.flick, *pack.note_style_mh.flick);
-                r.y += sp;
                 let mut r = Rect::new(0.1, cr.y + 0.1, width, cr.h - 0.38);
                 let draw = |mut r: Rect, style: &NoteStyle, width: f32| {
                     let conv = |r: Rect, tex: &SafeTexture| Rect::new(r.x * tex.width(), r.y * tex.height(), r.w * tex.width(), r.h * tex.height());

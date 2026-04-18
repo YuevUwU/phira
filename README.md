@@ -1,6 +1,6 @@
 # Phira
 
-![Phira](https://files-cf.phira.cn/github-showcase.png)
+![Phira Showcase](https://phira.5wyxi.com/files/github-showcase.png)
 
 [中文版本](./README-zh_CN.md)
 
@@ -19,9 +19,11 @@ If you want to talk with us in depth, email [contact@phira.cn](mailto://contact@
 
 ## Translation
 
-If you want to add your language to Phira, please check [this](https://github.com/TeamFlos/phira/pull/201#issuecomment-1783356944) out.
+See our [Weblate](https://hosted.weblate.org/engage/phira/) page for the latest translation progress. You can easily contribute to translations there.
 
-Be free to create issues if there's any problem with the current translation.
+![Translation Progress](https://hosted.weblate.org/widget/phira/svg-badge.svg)
+
+![Translation Status](https://hosted.weblate.org/widget/phira/multi-auto.svg)
 
 ## Star History
 

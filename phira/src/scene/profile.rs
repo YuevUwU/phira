@@ -6,7 +6,7 @@ use crate::{
     client::{recv_raw, Client, Record, User, UserManager},
     get_data, get_data_mut,
     page::{Fader, Illustration, SFader},
-    save_data, sync_data, ttl,
+    save_data, sync_data,
 };
 use anyhow::Result;
 use chrono::Local;
@@ -46,6 +46,7 @@ pub struct ProfileScene {
     icon_user: SafeTexture,
 
     btn_back: RectButton,
+    btn_name: RectButton,
     btn_open_web: DRectButton,
     btn_logout: DRectButton,
     btn_delete: DRectButton,
@@ -86,6 +87,7 @@ impl ProfileScene {
             icon_user,
 
             btn_back: RectButton::new(),
+            btn_name: RectButton::new(),
             btn_open_web: DRectButton::new(),
             btn_logout: DRectButton::new(),
             btn_delete: DRectButton::new(),
@@ -260,6 +262,13 @@ impl Scene for ProfileScene {
             self.sf.next(t, NextScene::Pop);
             return Ok(true);
         }
+        if self.btn_name.touch(touch) {
+            if let Some(user) = &self.user {
+                unsafe { get_internal_gl() }.quad_context.clipboard_set(&user.name);
+                show_message(tl!("name-copied")).ok();
+            }
+            return Ok(true);
+        }
         if self.btn_open_web.touch(touch, t) {
             open_url(&format!("https://phira.moe/user/{}", self.id))?;
             return Ok(true);
@@ -278,7 +287,7 @@ impl Scene for ProfileScene {
             confirm_delete(Arc::clone(&self.should_delete));
             return Ok(true);
         }
-        if get_data().me.as_ref().map_or(false, |it| it.id == self.id) && self.avatar_btn.touch(touch) {
+        if get_data().me.as_ref().is_some_and(|it| it.id == self.id) && self.avatar_btn.touch(touch) {
             request_file("avatar");
             return Ok(true);
         }
@@ -346,6 +355,14 @@ impl Scene for ProfileScene {
                         .max_width(mw)
                         .color(user.name_color())
                         .draw();
+                    self.btn_name.set(ui, r);
+                    let r = ui
+                        .text(format!("#{}", self.id))
+                        .size(0.35)
+                        .pos(cx, r.bottom() + 0.01)
+                        .anchor(0.5, 0.)
+                        .color(semi_white(0.5))
+                        .draw();
                     let r = ui
                         .text(format!("RKS {:.2}", user.rks))
                         .size(0.5)
@@ -379,7 +396,7 @@ impl Scene for ProfileScene {
                     let mut r = Rect::new(r.center().x - hw, r.bottom() + 0.02, hw * 2., 0.1);
                     self.btn_open_web.render_text(ui, r, t, ttl!("open-in-web"), 0.6, true);
                     r.y += r.h + 0.02;
-                    if get_data().me.as_ref().map_or(false, |it| it.id == self.id) {
+                    if get_data().me.as_ref().is_some_and(|it| it.id == self.id) {
                         self.btn_logout.render_text(ui, r, t, tl!("logout"), 0.6, true);
                         r.y += r.h + 0.02;
                         self.btn_delete.render_text(ui, r, t, tl!("delete"), 0.6, true);
@@ -405,7 +422,7 @@ impl Scene for ProfileScene {
                         let h = 0.2;
                         let pad = 0.02;
                         let mut iter = items.iter_mut();
-                        for i in 0..((n + 1) / 2) {
+                        for i in 0..n.div_ceil(2) {
                             for j in 0..(n - i * 2).min(2) {
                                 let Some(item) = iter.next() else { unreachable!() };
                                 f.render(ui, t, |ui| {
@@ -439,7 +456,7 @@ impl Scene for ProfileScene {
                                 });
                             }
                         }
-                        (r.w, r.y + ui.top + h * ((n + 1) / 2) as f32 + 0.04)
+                        (r.w, r.y + ui.top + h * n.div_ceil(2) as f32 + 0.04)
                     })
                 });
             });

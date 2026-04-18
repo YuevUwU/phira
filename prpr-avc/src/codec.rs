@@ -105,12 +105,18 @@ impl AVCodecContext {
     pub fn receive_frame(&mut self, frame: &mut AVFrame) -> Result<bool> {
         unsafe {
             match handle(ffi::avcodec_receive_frame(self.0 .0, frame.0 .0)) {
-                Err(Error::TryAgain) => return Ok(false),
+                Err(Error::TryAgain) => Ok(false),
                 x => {
                     x?;
                     Ok(true)
                 }
             }
+        }
+    }
+
+    pub fn flush_buffers(&mut self) {
+        unsafe {
+            ffi::avcodec_flush_buffers(self.0 .0);
         }
     }
 }
