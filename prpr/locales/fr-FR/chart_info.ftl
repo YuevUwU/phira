@@ -1,4 +1,3 @@
-
 edit-chart = Modifier la partition
 level-displayed = Afficher les difficultés
 chart-name = Nom
@@ -24,5 +23,4 @@ tip = Tip
 intro = Introduction
 tags = Tags
 tag-exists = Le tag existe déjà
-
 illegal-input = Entrée invalide

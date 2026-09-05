@@ -1,4 +1,3 @@
-
 edit-chart = Sửa Chart
 level-displayed = Level
 chart-name = Tên
@@ -26,5 +25,4 @@ tip = Mẹo
 intro = Mô tả
 tags = Thẻ
 tag-exists = Thẻ đã tồn tại
-
 illegal-input = Đầu vào không hợp lệ

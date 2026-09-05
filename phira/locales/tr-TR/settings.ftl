@@ -1,12 +1,9 @@
-
 label = AYARLAR
-
 general = Genel
 audio = Ses
 chart = Müzikler
 debug = Hata Ayıklama
 about = Bilgi
-
 item-lang = Dil
 item-offline = Çevrimdışı Mod
 item-offline-sub = Çevrimdışı moddayken müzik ekleyemezsiniz
@@ -19,14 +16,12 @@ item-lowq = Düşük kaliteli mod
 item-lowq-sub = Arayüz gecikmeliyse bunu seçin
 item-insecure = Emniyetsiz Mod
 item-insecure-sub = Çevrimiçi özellikleri kullanamıyorsanzı bunu açın. Bağlantınızı güvensiz hâle getirir!
-
 item-adjust = Otomatik zaman ayarlama
 item-adjust-sub = Müzikle ritim haritasını senkronize etmek içim zamanı dinamik olarak ayarla
 item-music = Müzik sesi
 item-sfx = Ses efektleri
 item-bgm = Arkaplan müziği
 item-cali = Dengeyi ayarla
-
 item-show-acc = Doğruluğu gerçek zamanlı göster
 item-dc-pause = Durdurmak için çift dokun
 item-dhint = Aynı anda gelen notaları belirt
@@ -39,50 +34,47 @@ item-prefer-reduced-motion = Azaltılmış Hareket Tercih Et
 item-prefer-reduced-motion-sub = Animasyonları ve görsel efektleri azalt
 item-speed = Hız
 item-note-size = Nota boyutu
-
 item-chart-debug = Ritim haritası hata ayıklama modu
 item-chart-debug-sub = Çizgi numarasını ve oryantasyonunu göster
 item-touch-debug = Dokunma hata ayıklama modu
 item-touch-debug-sub = Dokunulan noktaları göster.
-
 load-cali-failed = Ses yüklenemedi
-
 about-content =
-  Phira v{ $version }
+    Phira v{ $version }
 
-  Phira, Phigros'tan ilham alınmış ticari olmayan topluluk odaklı bir ritim oyunudur.
+    Phira, Phigros'tan ilham alınmış ticari olmayan topluluk odaklı bir ritim oyunudur.
 
-  Bu proje gayri resmî bir oyuncu projesidir ve Pigeon Games Co., Ltd. ya da resmî Phigros ekibiyle hiçbir yetkilendirme, iş birliği veya işletme ilişkisi bulunmamaktadır.
+    Bu proje gayri resmî bir oyuncu projesidir ve Pigeon Games Co., Ltd. ya da resmî Phigros ekibiyle hiçbir yetkilendirme, iş birliği veya işletme ilişkisi bulunmamaktadır.
 
-  BiliBili Hesabı: @Phira官方
-  QQ Loncası: r48eajexth
-  Discord Sunucusu: discord.gg/gqpR3bTSsP
+    BiliBili Hesabı: @Phira官方
+    QQ Loncası: r48eajexth
+    Discord Sunucusu: discord.gg/gqpR3bTSsP
 
-  Canlı güncellemeler almak ve yardım almak için QQ loncasına veya Discord sunucusuna katılmanızı öneririz.
+    Canlı güncellemeler almak ve yardım almak için QQ loncasına veya Discord sunucusuna katılmanızı öneririz.
 
-  Personel Listesi (alfabetik sıralı)
-  Geliştirme
-  { $development }
+    Personel Listesi (alfabetik sıralı)
+    Geliştirme
+    { $development }
 
-  Operasyonlar
-  { $operations }
+    Operasyonlar
+    { $operations }
 
-  Dokümantasyon
-  { $documentation }
+    Dokümantasyon
+    { $documentation }
 
-  Sanat
-  { $art }
+    Sanat
+    { $art }
 
-  Müzik
-  { $music }
+    Müzik
+    { $music }
 
-  Ses
-  { $audio }
+    Ses
+    { $audio }
 
-  Topluluk Yönetimi
-  { $community }
+    Topluluk Yönetimi
+    { $community }
 
-  Yerelleştirme
-  { $localization }
+    Yerelleştirme
+    { $localization }
 
-  Ve daha birçok gönüllü chart incelemecisi. Tam liste için https://phira.moe/staff adresine bakın
+    Ve daha birçok gönüllü chart incelemecisi. Tam liste için https://phira.moe/staff adresine bakın

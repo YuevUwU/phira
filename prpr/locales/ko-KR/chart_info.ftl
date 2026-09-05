@@ -1,4 +1,3 @@
-
 edit-chart = 비트맵 편집
 level-displayed = 레벨
 chart-name = 이름
@@ -24,5 +23,4 @@ tip = 팁
 intro = 소개
 tags = 태그
 tag-exists = 태그가 이미 존재합니다.
-
 illegal-input = 부적절한 입력입니다.

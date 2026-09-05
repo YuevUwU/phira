@@ -1,4 +1,3 @@
-
 edit-chart = Edytuj beatmapę
 level-displayed = poziom
 chart-name = Nazwa
@@ -24,5 +23,4 @@ tip = Wskazówka
 intro = Wprowadzenie
 tags = Tagi
 tag-exists = Tag już istnieje
-
 illegal-input = Nieprawidłowe wprowadzenie

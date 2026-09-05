@@ -1,7 +1,5 @@
-
 info-fail = Falha ao carregar informações
 invalid-chart = Gráfico inválido
-
 importing = Importando
 import-success = Importado com sucesso
 import-failed = Falha na importação

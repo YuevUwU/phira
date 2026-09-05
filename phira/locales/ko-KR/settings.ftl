@@ -1,12 +1,9 @@
-
 label = 설정
-
 general = 일반
 audio = 오디오
 chart = 비트맵
 debug = 디버그
 about = 정보
-
 item-lang = 언어
 item-offline = 오프라인 모드
 item-offline-sub = 오프라인 모드에서는 플레이 기록을 업로드할 수 없습니다.
@@ -27,14 +24,12 @@ item-enable-anys-sub = 연결 품질을 향상시키기 위해 Anys 게이트웨
 item-anys-gateway = Anys 게이트웨이
 item-anys-gateway-sub = Anys 게이트웨이 주소
 item-anys-gateway-invalid = 잘못된 게이트웨이 주소입니다
-
 item-adjust = 자동 시간 조정
 item-adjust-sub = 음악과 비트맵을 동기화하기 위해 시간을 동적으로 조정합니다.
 item-music = 음악 볼륨
 item-sfx = 효과음 볼륨
 item-bgm = BGM 볼륨
 item-cali = 오프셋 조정
-
 item-show-acc = 실시간 정확도 표시
 item-dc-pause = 더블 클릭으로 일시 정지
 item-dhint = 더블 힌트
@@ -47,50 +42,47 @@ item-prefer-reduced-motion = 애니메이션 줄이기
 item-prefer-reduced-motion-sub = 애니메이션과 시각 효과를 줄입니다
 item-speed = 노트 속도
 item-note-size = 노트 크기
-
 item-chart-debug = 비트맵 디버그 모드
 item-chart-debug-sub = 라인 번호 및 방향 표시
 item-touch-debug = 터치 디버그 모드
 item-touch-debug-sub = 터치 지점 표시
-
 load-cali-failed = 오디오를 로드하는데 실패했습니다.
-
 about-content =
-  Phira v{ $version }
+    Phira v{ $version }
 
-  Phira는 Phigros에서 영감을 받은 비상업적 커뮤니티 중심의 리듬 게임입니다.
+    Phira는 Phigros에서 영감을 받은 비상업적 커뮤니티 중심의 리듬 게임입니다.
 
-  본 프로젝트는 비공식 플레이어 프로젝트로, Pigeon Games(南京鸽游网络有限公司) 및 《Phigros》 공식 측과 그 어떠한 승인·협력·운영 관계도 존재하지 않습니다.
+    본 프로젝트는 비공식 플레이어 프로젝트로, Pigeon Games(南京鸽游网络有限公司) 및 《Phigros》 공식 측과 그 어떠한 승인·협력·운영 관계도 존재하지 않습니다.
 
-  BiliBili 계정: @Phira官方
-  QQ 길드: r48eajexth
-  Discord 서버: discord.gg/gqpR3bTSsP
+    BiliBili 계정: @Phira官方
+    QQ 길드: r48eajexth
+    Discord 서버: discord.gg/gqpR3bTSsP
 
-  최신 소식을 받고 도움을 받으려면 QQ 길드 또는 Discord 서버에 가입하는 것을 권장합니다.
+    최신 소식을 받고 도움을 받으려면 QQ 길드 또는 Discord 서버에 가입하는 것을 권장합니다.
 
-  스태프 목록 (사전순)
-  개발
-  { $development }
+    스태프 목록 (사전순)
+    개발
+    { $development }
 
-  운영
-  { $operations }
+    운영
+    { $operations }
 
-  문서
-  { $documentation }
+    문서
+    { $documentation }
 
-  아트
-  { $art }
+    아트
+    { $art }
 
-  음악
-  { $music }
+    음악
+    { $music }
 
-  오디오
-  { $audio }
+    오디오
+    { $audio }
 
-  커뮤니티 관리
-  { $community }
+    커뮤니티 관리
+    { $community }
 
-  현지화 기여자
-  { $localization }
+    현지화 기여자
+    { $localization }
 
-  그리고 많은 자원봉사 채보 리뷰어들에게 감사드립니다. 전체 목록은 https://phira.moe/staff 를 참조하세요.
+    그리고 많은 자원봉사 채보 리뷰어들에게 감사드립니다. 전체 목록은 https://phira.moe/staff 를 참조하세요.

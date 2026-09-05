@@ -1,4 +1,3 @@
-
 to = to
 adjust-offset = Adjust Offset
 offset-cancel = Cancel
@@ -9,7 +8,6 @@ analysis-computing = Analyzing...
 auto-offset-btn = Analyze
 speed = Speed Multiplier
 game-over = Game Over
-
 ex-time-out-of-range = Make sure time is within bounds.
 ex-invalid-format = Invalid format.
 ex-time-set = Time changed.
